@@ -24,8 +24,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Ruta raíz para test de salud
-app.MapGet("/", () => Results.Ok("Vault Backend Running"));
+
 
 // Esto debe ir al final
 app.Run();
