@@ -1,27 +1,31 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Establece el puerto de escucha
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configurar el middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// ⚠️ Opcional si no usas HTTPS directamente
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
-
+// Ruta raíz para test de salud
 app.MapGet("/", () => Results.Ok("Vault Backend Running"));
+
+// Esto debe ir al final
+app.Run();
