@@ -1,7 +1,10 @@
-public class Group
+namespace VaultAPI.Models
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
+    public class Group
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
 
-    public ICollection<Company> Companies { get; set; }
+        public ICollection<Company> Companies { get; set; }
+    }
 }
