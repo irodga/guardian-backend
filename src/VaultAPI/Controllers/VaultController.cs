@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Mvc;
+
+
 [ApiController]
 [Route("vault")]
 public class VaultController : ControllerBase
