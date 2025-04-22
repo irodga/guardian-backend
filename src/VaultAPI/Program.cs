@@ -24,7 +24,21 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
-
-// Esto debe ir al final
+// 👉 Llamamos al login de Vault para pruebas
+await TestVaultLogin(); // <- solo esta línea
 app.Run();
+
+static async Task TestVaultLogin()
+{
+    var vaultService = new VaultIamAuthService();
+    var token = await vaultService.LoginAsync();
+
+    if (!string.IsNullOrWhiteSpace(token))
+    {
+        Console.WriteLine($"✅ Vault token obtenido: {token}");
+    }
+    else
+    {
+        Console.WriteLine("❌ Falló el login IAM con Vault.");
+    }
+}
