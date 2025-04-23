@@ -6,12 +6,9 @@ namespace VaultAPI.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public int SecretId { get; set; }
-        public string Action { get; set; } = string.Empty; // accessed, requested, approved, rejected
-        public bool Success { get; set; } = true;
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-        public string Details { get; set; } = string.Empty;
-
-        public User User { get; set; } = null!;
-        public Secret Secret { get; set; } = null!;
+        public string Action { get; set; }  // Esta podría ser la acción, por ejemplo "read", "write"
+        public DateTime Timestamp { get; set; }  // Esto es lo que usarás para mostrar la fecha
+        // Otras propiedades que puedas necesitar
+        public Secret Secret { get; set; } = null!;  // Referencia al secreto
     }
 }

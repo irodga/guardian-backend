@@ -68,8 +68,8 @@
             {
                 <tr>
                     <td>@access.Secret.Name</td>
-                    <td>@access.Permission</td>
-                    <td>@(access.GrantedAt.ToString("dd/MM/yyyy HH:mm:ss") ?? "Sin fecha")</td>
+                    <td>@access.Action</td>
+                    <td>@access.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
                 </tr>
             }
         </tbody>
