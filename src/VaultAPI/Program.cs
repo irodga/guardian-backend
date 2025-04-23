@@ -50,6 +50,7 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
+app.UseStaticFiles();
 
 await TestVaultLogin();
 app.Run();
