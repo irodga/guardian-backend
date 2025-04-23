@@ -11,27 +11,57 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <style>
-    /* Asegura que el menú ocupe todo el alto disponible */
+/* Asegurarnos de que el contenedor del menú ocupe toda la altura */
 .navbar-nav {
-    height: 100%;
+    height: 100vh; /* 100% del alto de la ventana */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Alineamos el contenido hacia arriba */
     padding-top: 20px;
     padding-bottom: 20px;
 }
 
-/* Estilo para los enlaces de menú */
-.nav-item {
-    margin-bottom: 10px;  /* Agregar un pequeño espacio entre los elementos del menú */
-}
-
-/* Cambiar el fondo de los enlaces activos */
-.nav-link.active {
-    background-color: #007bff; /* Color de fondo azul para el enlace activo */
-    color: white;  /* Cambiar el color del texto */
-}
-
-/* Asegurar que el menú tenga un borde y se vea bien alineado */
+/* Aseguramos que el menú tenga un fondo y bordes bien definidos */
 .navbar {
-    border-right: 2px solid #ccc; /* Un borde a la derecha del menú */
+    border-right: 2px solid #ddd; /* Borde a la derecha */
+    background-color: #f8f9fa;  /* Color de fondo suave */
+}
+
+/* Mejoramos los estilos de los enlaces del menú */
+.nav-item {
+    margin-bottom: 15px;  /* Agregar espacio entre los elementos del menú */
+}
+
+/* Estilo del enlace activo */
+.nav-link.active {
+    background-color: #007bff;  /* Fondo azul para el enlace activo */
+    color: white;  /* Texto blanco */
+    border-radius: 4px;
+}
+
+/* Aseguramos que los enlaces del menú se vean bien */
+.nav-link {
+    color: #333;  /* Color de texto de los enlaces */
+    font-weight: 500; /* Hacemos que el texto sea más legible */
+    text-transform: uppercase; /* Capitalizamos los enlaces */
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;  /* Transición suave para el hover */
+}
+
+.nav-link:hover {
+    background-color: #f1f1f1; /* Efecto hover en los enlaces */
+}
+
+/* Ajustes para mejorar la apariencia del contenido */
+.container-fluid {
+    margin-top: 20px; /* Espaciado superior para el contenido */
+}
+
+/* Aseguramos que el contenido del dashboard tenga un buen espaciado */
+.col-md-9 {
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 </style>

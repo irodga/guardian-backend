@@ -9,7 +9,8 @@
         <!-- Menú de navegación izquierdo -->
         <div class="col-md-3">
             <nav class="navbar navbar-light bg-light">
-                <div class="navbar-nav">
+                <div class="navbar-nav flex-column" style="height: 100vh; padding-top: 20px; padding-bottom: 20px;">
+                    <!-- Mejorar los enlaces y agregar espaciado entre ellos -->
                     <a href="@Url.Action("Index", "Dashboard")" class="nav-item nav-link active">Dashboard</a>
                     <a href="@Url.Action("Create", "Secrets")" class="nav-item nav-link">Agregar Secreto</a>
                     <a href="@Url.Action("Index", "Secrets")" class="nav-item nav-link">Ver Secretos</a>
