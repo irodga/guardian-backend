@@ -24,7 +24,7 @@ namespace VaultAPI.Controllers
             // Si el usuario ya está autenticado, redirigir directamente al Dashboard o al returnUrl
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToLocal(returnUrl); // Redirige a la URL solicitada o al Dashboard
+                return RedirectToLocal(returnUrl);
             }
 
             // Pasamos el returnUrl a la vista
