@@ -1,4 +1,4 @@
-// Ruta: Controllers/LoginController.cs
+// src/VaultAPI/Controllers/LoginController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using System.Linq;
@@ -16,14 +16,15 @@ namespace VaultAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string? returnUrl)
+        public IActionResult Index(string returnUrl)
         {
-            ViewData["ReturnUrl"] = returnUrl;  // Mantener la URL de retorno
+            // Pasamos el returnUrl a la vista a través de ViewData
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Index(LoginModel model, string? returnUrl)
+        public IActionResult Index(LoginModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -39,16 +40,22 @@ namespace VaultAPI.Controllers
                 ModelState.AddModelError("", "Usuario o contraseña incorrectos");
                 return View(model);
             }
-            
-            var inputPassword = model.Password?.Trim();
-            var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
 
-            if (resultado)
+            var inputPassword = model.Password?.Trim();
+            var result = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
+
+            if (result)
             {
                 TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
 
-                // Redirigir a la URL de retorno o al dashboard si no hay una URL de retorno
-                return Redirect(returnUrl ?? "/Dashboard");
+                // Redirigir a ReturnUrl o a Dashboard por defecto
+                var returnUrl = Request.Query["ReturnUrl"].ToString();
+                if (string.IsNullOrEmpty(returnUrl))
+                {
+                    returnUrl = "/Dashboard";  // Redirigir a Dashboard por defecto si no hay ReturnUrl
+                }
+
+                return Redirect(returnUrl);  // Redirigir al ReturnUrl
             }
 
             ModelState.AddModelError("", "Usuario o contraseña incorrectos");

@@ -3,6 +3,7 @@
 
 @{
     Layout = null;
+    var returnUrl = ViewData["ReturnUrl"] as string; // Obtiene el ReturnUrl de ViewData
 }
 
 <!DOCTYPE html>
@@ -39,7 +40,7 @@
                         @Html.AntiForgeryToken()
 
                         <!-- Campo oculto para ReturnUrl -->
-                        <input type="hidden" name="ReturnUrl" value="@Request.Query["ReturnUrl"]" />
+                        <input type="hidden" name="ReturnUrl" value="@returnUrl" />
 
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
