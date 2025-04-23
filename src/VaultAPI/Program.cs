@@ -64,10 +64,56 @@ app.UseAuthorization();   // Asegura que se use la autorización
 
 app.UseStaticFiles();  // Archivos estáticos como CSS, JS, imágenes, etc.
 
+// Rutas de controladores
 app.MapControllerRoute(
     name: "dashboard",
     pattern: "Dashboard/Index", 
     defaults: new { controller = "Dashboard", action = "Index" });
+
+app.MapControllerRoute(
+    name: "secrets",
+    pattern: "Secrets/Index", 
+    defaults: new { controller = "Secrets", action = "Index" });
+
+app.MapControllerRoute(
+    name: "secretCreate",
+    pattern: "Secrets/Create", 
+    defaults: new { controller = "Secrets", action = "Create" });
+
+app.MapControllerRoute(
+    name: "secretView",
+    pattern: "Secrets/View/{id:int}",
+    defaults: new { controller = "Secrets", action = "View" });
+
+app.MapControllerRoute(
+    name: "secretDelete",
+    pattern: "Secrets/Delete/{id:int}",
+    defaults: new { controller = "Secrets", action = "Delete" });
+
+app.MapControllerRoute(
+    name: "login",
+    pattern: "Login/Index", 
+    defaults: new { controller = "Login", action = "Index" });
+
+app.MapControllerRoute(
+    name: "accessDenied",
+    pattern: "AccessDenied", 
+    defaults: new { controller = "AccessDenied", action = "Index" });
+
+app.MapControllerRoute(
+    name: "users",
+    pattern: "Users/Index", 
+    defaults: new { controller = "Users", action = "Index" });
+
+app.MapControllerRoute(
+    name: "companies",
+    pattern: "Companies/Index", 
+    defaults: new { controller = "Companies", action = "Index" });
+
+app.MapControllerRoute(
+    name: "groups",
+    pattern: "Groups/Index", 
+    defaults: new { controller = "Groups", action = "Index" });
 
 app.MapControllers(); // Esto configura las rutas de los controladores
 
