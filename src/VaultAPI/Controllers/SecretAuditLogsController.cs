@@ -2,13 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("audit-logs")]
     public class SecretAuditLogsController : ControllerBase
     {
         private readonly GuardianDbContext _context;
@@ -18,35 +16,16 @@ namespace VaultAPI.Controllers
             _context = context;
         }
 
+        // GET: api/SecretAuditLogs
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetSecretAuditLogs()
         {
-            var logs = await _context.SecretAuditLogs
-                .Include(l => l.User)
-                .Include(l => l.Secret)
-                .OrderByDescending(l => l.Timestamp)
+            var auditLogs = await _context.SecretAuditLogs
+                .Include(log => log.User) // Asegúrate de incluir User si es necesario
+                .Include(log => log.Secret) // Asegúrate de incluir Secret si es necesario
                 .ToListAsync();
 
-            return Ok(logs);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateAuditLogDto dto)
-        {
-            var log = new SecretAuditLog
-            {
-                UserId = dto.UserId,
-                SecretId = dto.SecretId,
-                Action = dto.Action,
-                Success = dto.Success,
-                Details = dto.Details,
-                Timestamp = DateTime.UtcNow
-            };
-
-            _context.SecretAuditLogs.Add(log);
-            await _context.SaveChangesAsync();
-
-            return Ok(log);
+            return Ok(auditLogs);
         }
     }
 }
