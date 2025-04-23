@@ -1,6 +1,10 @@
 @* Ruta: Views/Login/Index.cshtml *@
 @model VaultAPI.Models.LoginModel
 
+@{
+    Layout = null;
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,18 +12,20 @@
     <title>Login Test</title>
 </head>
 <body>
+    @if (TempData["LoginMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["LoginMessage"]
+        </div>
+    }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            Hubo un error en el inicio de sesión.
+        </div>
+    }
+
     <h2>Login real</h2>
 
     <form method="post" action="/Login/Index">
         <div>
-            <label>Username</label>
-            <input name="Username" />
-        </div>
-        <div>
-            <label>Password</label>
-            <input name="Password" type="password" />
-        </div>
-        <button type="submit">Entrar</button>
-    </form>
-</body>
-</html>
