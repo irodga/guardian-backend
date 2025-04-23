@@ -6,20 +6,6 @@
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Menú de navegación izquierdo -->
-        <div class="col-md-3" style="height: 100vh; overflow-y: auto;">  <!-- Aseguramos que el menú ocupe toda la altura -->
-            <nav class="navbar navbar-light bg-light">
-                <div class="navbar-nav flex-column" style="padding-top: 20px; padding-bottom: 20px;">
-                    <a href="@Url.Action("Index", "Dashboard")" class="nav-item nav-link active">Dashboard</a>
-                    <a href="@Url.Action("Create", "Secrets")" class="nav-item nav-link">Agregar Secreto</a>
-                    <a href="@Url.Action("Index", "Secrets")" class="nav-item nav-link">Ver Secretos</a>
-                    <a href="@Url.Action("Index", "AccessLogs")" class="nav-item nav-link">Accesos Recientes</a>
-                    <a href="@Url.Action("Index", "Companies")" class="nav-item nav-link">Empresas</a>
-                    <a href="@Url.Action("Index", "Groups")" class="nav-item nav-link">Grupos</a>
-                </div>
-            </nav>
-        </div>
-
         <!-- Contenido del Dashboard -->
         <div class="col-md-9" style="padding-left: 30px; padding-right: 30px;">  <!-- Aseguramos un espaciado adecuado -->
             <h1>Resumen de Secretos</h1>
@@ -45,6 +31,7 @@
                     </div>
                 </div>
             </div>
+
             <!-- Últimos 5 secretos creados -->
             <h3>Últimos 5 Secretos Creados</h3>
             <div class="row">
@@ -53,12 +40,13 @@
                     <div class="col-md-4 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h5>@secret</h5>  <!-- Mostramos el nombre del secreto -->
+                                <h5>@secret.Name</h5>  <!-- Mostramos el nombre del secreto -->
                             </div>
                         </div>
                     </div>
                 }
             </div>
+
             <!-- Accesos recientes -->
             <h3>Accesos Recientes</h3>
             <div class="row">
@@ -79,4 +67,3 @@
         </div>
     </div>
 </div>
-
