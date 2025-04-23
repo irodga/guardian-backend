@@ -57,7 +57,7 @@
                     <div class="col-md-4 mb-4">
                         <div class="card">
                             <div class="card-header">
-                                <h5>@secret</h5>  <!-- Mostramos el nombre del secreto -->
+                                <h5>@secret.Name</h5>  <!-- Mostramos el nombre del secreto -->
                             </div>
                         </div>
                     </div>
@@ -75,7 +75,8 @@
                                 <h5>@access.Timestamp.ToString("g")</h5>
                             </div>
                             <div class="card-body">
-                                <p>@access.SecretName</p>  <!-- Mostramos el nombre del secreto relacionado -->
+                                <!-- Accede al nombre del secreto con `access.Secret.Name` -->
+                                <p>@access.Secret.Name</p>  <!-- Mostramos el nombre del secreto relacionado -->
                             </div>
                         </div>
                     </div>
