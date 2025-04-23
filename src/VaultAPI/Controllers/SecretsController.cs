@@ -1,10 +1,10 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;
+using VaultAPI.Models.Dto;  // Asegúrate de importar el namespace correcto para CreateSecretDto
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization; // Agregar esta importación para usar [Authorize]
+using Microsoft.AspNetCore.Authorization;  // Asegúrate de usar [Authorize]
 
 namespace VaultAPI.Controllers
 {
@@ -26,7 +26,8 @@ namespace VaultAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = int.Parse(User.Identity!.Name!); // O algún mecanismo para obtener el UserId
+            var userId = int.Parse(User.Identity!.Name!); // Asegúrate de que el userId esté correctamente configurado
+
             var secrets = await _context.Secrets
                 .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .Include(s => s.Company)
@@ -44,7 +45,7 @@ namespace VaultAPI.Controllers
 
         // POST: /Secrets/Create
         [HttpPost]
-        public async Task<IActionResult> Create(CreateSecretDto dto)
+        public async Task<IActionResult> Create(VaultAPI.Models.Dto.CreateSecretDto dto)  // Usamos el CreateSecretDto correcto
         {
             if (!ModelState.IsValid)
             {
