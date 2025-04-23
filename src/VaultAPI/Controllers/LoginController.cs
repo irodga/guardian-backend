@@ -29,7 +29,7 @@ namespace VaultAPI.Controllers
 
             // Pasamos el returnUrl a la vista
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            return View(new LoginModel()); // Asegúrate de pasar el modelo vacío a la vista
         }
 
         // Método POST para manejar la autenticación
