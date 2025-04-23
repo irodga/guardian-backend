@@ -1,8 +1,10 @@
-// Ruta: Controllers/LoginController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using System.Linq;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;  // Importar para ClaimsIdentity
 
 namespace VaultAPI.Controllers
 {
@@ -22,37 +24,39 @@ namespace VaultAPI.Controllers
         }
 
         [HttpPost]
-public IActionResult Index(LoginModel model)
-{
-    Console.WriteLine("🔁 POST /Login/Index recibido");
-
-    if (!ModelState.IsValid)
-    {
-        Console.WriteLine("❌ ModelState inválido");
-        foreach (var error in ModelState)
+        public IActionResult Index(LoginModel model)
         {
-            foreach (var sub in error.Value.Errors)
+            Console.WriteLine("🔁 POST /Login/Index recibido");
+
+            // Verificar si el modelo es válido
+            if (!ModelState.IsValid)
             {
-                Console.WriteLine($"➡️ Campo: {error.Key} - Error: {sub.ErrorMessage}");
+                Console.WriteLine("❌ ModelState inválido");
+                foreach (var error in ModelState)
+                {
+                    foreach (var sub in error.Value.Errors)
+                    {
+                        Console.WriteLine($"➡️ Campo: {error.Key} - Error: {sub.ErrorMessage}");
+                    }
+                }
+                return View(model);
             }
-        }
-        return View(model);
-    }
 
-    Console.WriteLine("========= DEBUG LOGIN =========");
-    Console.WriteLine($"[Usuario ingresado] => '{model.Username}'");
-    Console.WriteLine($"[Password ingresado] => '{model.Password}'");
+            Console.WriteLine("========= DEBUG LOGIN =========");
+            Console.WriteLine($"[Usuario ingresado] => '{model.Username}'");
+            Console.WriteLine($"[Password ingresado] => '{model.Password}'");
 
-    var user = _db.Users.FirstOrDefault(u =>
-        u.Username == model.Username &&
-        u.AuthType == "local");
+            // Buscar el usuario en la base de datos
+            var user = _db.Users.FirstOrDefault(u =>
+                u.Username == model.Username &&
+                u.AuthType == "local");
 
-    if (user == null)
-    {
-        Console.WriteLine("❌ Usuario no encontrado en la base");
-    }
-    else
-    {
+            if (user == null)
+            {
+                Console.WriteLine("❌ Usuario no encontrado en la base");
+            }
+            else
+            {
                 Console.WriteLine($"✅ Usuario encontrado: {user.Username}");
                 Console.WriteLine($"[Hash desde DB] => '{user.PasswordHash}'");
 
@@ -83,9 +87,9 @@ public IActionResult Index(LoginModel model)
                 }
             }
 
-    Console.WriteLine("========= END DEBUG =========");
-    ModelState.AddModelError("", "Usuario o contraseña incorrectos");
-    return View(model);
-}
+            Console.WriteLine("========= END DEBUG =========");
+            ModelState.AddModelError("", "Usuario o contraseña incorrectos");
+            return View(model);
+        }
     }
 }
