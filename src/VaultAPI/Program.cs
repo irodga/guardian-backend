@@ -57,7 +57,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-/ Rutas y configuración de autenticación
+// Rutas y configuración de autenticación
 app.UseRouting(); // Asegura que las rutas estén configuradas antes de autenticación
 app.UseAuthentication();  // Asegura que se use la autenticación
 app.UseAuthorization();   // Asegura que se use la autorización
