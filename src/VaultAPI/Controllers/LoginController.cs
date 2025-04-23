@@ -53,19 +53,35 @@ public IActionResult Index(LoginModel model)
     }
     else
     {
-        Console.WriteLine($"✅ Usuario encontrado: {user.Username}");
-        Console.WriteLine($"[Hash desde DB] => '{user.PasswordHash}'");
+                Console.WriteLine($"✅ Usuario encontrado: {user.Username}");
+                Console.WriteLine($"[Hash desde DB] => '{user.PasswordHash}'");
 
-        var inputPassword = model.Password?.Trim();
-        var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
-        Console.WriteLine($"[Resultado de Verify] => {resultado}");
+                // Verificar la contraseña usando BCrypt
+                var inputPassword = model.Password?.Trim();
+                var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
+                Console.WriteLine($"[Resultado de Verify] => {resultado}");
 
-        if (resultado)
-        {
-            TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
-            return RedirectToAction("Index", "Dashboard");
-        }
-    }
+                if (resultado)
+                {
+                    // Crear los claims para la sesión
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),  // Asegúrate de que el user.Id esté aquí
+                        new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+                    };
+
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                    // Iniciar la sesión del usuario
+                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+                    // Redirigir al Dashboard
+                    TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
+                    return RedirectToAction("Index", "Dashboard");
+                }
+            }
 
     Console.WriteLine("========= END DEBUG =========");
     ModelState.AddModelError("", "Usuario o contraseña incorrectos");
