@@ -1,11 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Guardian Admin Panel</title>
+  <meta charset="UTF-8">
+  <title>Panel de Secretos</title>
 </head>
 <body>
-  <h1>Panel del Admin</h1>
-  <p>Aquí va el dashboard de secretos, usuarios, etc.</p>
+  <h1>Panel de administración de secretos</h1>
+
+  <h2>Leer secreto</h2>
+  <form id="read-form">
+    <input type="text" id="read-path" placeholder="Ruta del secreto (ej. guardian/token/master)" required />
+    <button type="submit">Leer</button>
+  </form>
+  <pre id="read-result"></pre>
+
+  <h2>Escribir secreto</h2>
+  <form id="write-form">
+    <input type="text" id="write-path" placeholder="Ruta del secreto (ej. guardian/token/master)" required />
+    <input type="text" id="write-value" placeholder="Valor del secreto" required />
+    <input type="number" id="write-cas" placeholder="CAS (0 para nuevo)" value="0" required />
+    <button type="submit">Escribir</button>
+  </form>
+  <pre id="write-result"></pre>
+
+  <script>
+    document.getElementById("read-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const path = document.getElementById("read-path").value;
+
+      const res = await fetch(`/vault/secret/${encodeURIComponent(path)}`);
+      const data = await res.json();
+      document.getElementById("read-result").textContent = JSON.stringify(data, null, 2);
+    });
+
+    document.getElementById("write-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const path = document.getElementById("write-path").value;
+      const value = document.getElementById("write-value").value;
+      const cas = parseInt(document.getElementById("write-cas").value);
+
+      const res = await fetch(`/vault/secret/${encodeURIComponent(path)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value, cas })
+      });
+
+      const data = await res.json();
+      document.getElementById("write-result").textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
 </body>
 </html>
