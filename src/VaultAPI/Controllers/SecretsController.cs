@@ -6,7 +6,6 @@ using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;  // Asegúrate de usar [Authorize]
 using System.IO;
-using System.Text;
 
 namespace VaultAPI.Controllers
 {
@@ -66,7 +65,10 @@ namespace VaultAPI.Controllers
             else if (dto.Type == "fiel" && dto.Files != null)
             {
                 // Convertir archivo a base64 para fiel
-                var base64File = Convert.ToBase64String(await File.ReadAllBytesAsync(dto.Files[0].FilePath));
+                using var memoryStream = new MemoryStream();
+                await dto.Files[0].CopyToAsync(memoryStream);
+                var base64File = Convert.ToBase64String(memoryStream.ToArray());
+
                 var fileData = new Dictionary<string, object>
                 {
                     { "filename", dto.Files[0].FileName },
