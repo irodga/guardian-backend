@@ -5,6 +5,8 @@ using VaultAPI.Models.Dto;  // Asegúrate de importar el namespace correcto para
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;  // Asegúrate de usar [Authorize]
+using System.IO;
+using System.Text;
 
 namespace VaultAPI.Controllers
 {
