@@ -28,7 +28,7 @@ namespace VaultAPI.Controllers
                 return Forbid();  // Esto devolverá 403 si el usuario no está autenticado
             }
 
-            // Obtener el userId de los claims (esperando que el claim 'NameIdentifier' esté configurado durante el login)
+            // Obtener el userId de los claims
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);  // Usar NameIdentifier si está disponible
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
@@ -56,6 +56,19 @@ namespace VaultAPI.Controllers
                 .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)
                 .Take(5)
+                .ToListAsync();
+
+            // Usamos Include para cargar la relación con Secret (eager loading)
+            var recentAccesses = await _context.SecretAuditLogs
+                .Where(log => log.UserId == userId)
+                .OrderByDescending(log => log.Timestamp)
+                .Take(5)
+                // Include para obtener la relación con Secret
+                .Include(log => log.Secret)  // Esto carga la relación con Secret
+                .Select(log => new {
+                    SecretName = log.Secret.Name,  // Aquí accedemos al nombre del secreto relacionado
+                    log.Timestamp
+                })
                 .ToListAsync();
 
             // Preparar el modelo de datos para la vista
