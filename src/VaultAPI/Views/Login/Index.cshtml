@@ -29,7 +29,8 @@
                         </div>
                     }
 
-                    @if (!ViewData.ModelState.IsValid)
+                    <!-- Mostrar el mensaje de error solo si ModelState no es válido -->
+                    @if (!ModelState.IsValid && !string.IsNullOrEmpty(model.Username) && !string.IsNullOrEmpty(model.Password))
                     {
                         <div class="alert alert-danger">
                             Credenciales inválidas.
