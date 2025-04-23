@@ -1,7 +1,7 @@
 // src/VaultAPI/Controllers/DashboardController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.ViewModels; // Asegúrate de importar el nuevo ViewModel
+using VaultAPI.Models.ViewModels;  // Asegúrate de importar el nuevo ViewModel
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
@@ -39,7 +39,7 @@ namespace VaultAPI.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            // Obtener accesos recientes de auditoría (Cambiar a SecretAuditLogs)
+            // Obtener accesos recientes de auditoría (usando SecretAuditLog)
             var recentAccesses = await _context.SecretAuditLogs
                 .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)

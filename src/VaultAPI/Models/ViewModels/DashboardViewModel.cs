@@ -2,10 +2,10 @@
 namespace VaultAPI.Models.ViewModels
 {
     public class DashboardViewModel
-{
-    public int SecretsCount { get; set; }
-    public int AccessCount { get; set; }
-    public List<Secret> RecentSecrets { get; set; } = new List<Secret>();
-    public List<SecretAccess> RecentAccesses { get; set; } = new List<SecretAccess>();
-}
+    {
+        public int SecretsCount { get; set; }
+        public int AccessCount { get; set; }
+        public List<Secret> RecentSecrets { get; set; } = new List<Secret>();
+        public List<SecretAuditLog> RecentAccesses { get; set; } = new List<SecretAuditLog>(); // Cambiado a SecretAuditLog
+    }
 }
