@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
+   // [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     public class DashboardController : Controller
     {
         private readonly GuardianDbContext _context;
