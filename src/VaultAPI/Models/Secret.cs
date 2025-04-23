@@ -14,5 +14,6 @@ namespace VaultAPI.Models
         public Company Company { get; set; } = null!;
         public ICollection<SecretAccess> SecretAccesses { get; set; } = new List<SecretAccess>();
         public ICollection<SecretAuditLog> AuditLogs { get; set; } = new List<SecretAuditLog>();
+        
     }
 }

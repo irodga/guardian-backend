@@ -4,74 +4,83 @@
     Layout = "_Layout";
 }
 
-<div class="container">
-    <h1>Resumen de Secretos</h1>
-
-    <!-- Menú de opciones para agregar recursos -->
-    <div class="btn-group" role="group" aria-label="Opciones de Dashboard">
-        <a href="@Url.Action("Create", "Secrets")" class="btn btn-primary">Agregar Secreto</a>
-        <a href="@Url.Action("Create", "Companies")" class="btn btn-secondary">Agregar Empresa</a>
-        <a href="@Url.Action("Create", "Groups")" class="btn btn-success">Agregar Grupo</a>
-    </div>
-
-    <!-- Resumen de secretos -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Total de Secretos Accesibles</h4>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Menú de navegación izquierdo -->
+        <div class="col-md-3">
+            <nav class="navbar navbar-light bg-light">
+                <div class="navbar-nav">
+                    <a href="@Url.Action("Index", "Dashboard")" class="nav-item nav-link active">Dashboard</a>
+                    <a href="@Url.Action("Create", "Secrets")" class="nav-item nav-link">Agregar Secreto</a>
+                    <a href="@Url.Action("Index", "Secrets")" class="nav-item nav-link">Ver Secretos</a>
+                    <a href="@Url.Action("Index", "AccessLogs")" class="nav-item nav-link">Accesos Recientes</a>
+                    <a href="@Url.Action("Index", "Companies")" class="nav-item nav-link">Empresas</a>
+                    <a href="@Url.Action("Index", "Groups")" class="nav-item nav-link">Grupos</a>
                 </div>
-                <div class="card-body">
-                    <p>@Model.SecretsCount</p>
-                </div>
-            </div>
+            </nav>
         </div>
 
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Total de Accesos a Secretos</h4>
+        <!-- Contenido del Dashboard -->
+        <div class="col-md-9">
+            <h1>Resumen de Secretos</h1>
+
+            <!-- Resumen de secretos -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Total de Secretos Accesibles</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>@Model.SecretsCount</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p>@Model.AccessCount</p>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Total de Accesos a Secretos</h4>
+                        </div>
+                        <div class="card-body">
+                            <p>@Model.AccessCount</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Últimos 5 secretos creados -->
+            <h3>Últimos 5 Secretos Creados</h3>
+            <div class="row">
+                @foreach (var secret in Model.RecentSecrets)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>@secret</h5>  <!-- Mostramos el nombre del secreto -->
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Accesos recientes -->
+            <h3>Accesos Recientes</h3>
+            <div class="row">
+                @foreach (var access in Model.RecentAccesses)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>@access.Timestamp.ToString("g")</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>@access.SecretName</p>  <!-- Mostramos el nombre del secreto relacionado -->
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-    </div>
-
-    <!-- Últimos 5 secretos creados -->
-    <h3>Últimos 5 Secretos Creados</h3>
-    <div class="row">
-        @foreach (var secret in Model.RecentSecrets)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>@secret.Name</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>@secret.Description</p>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <!-- Accesos recientes -->
-    <h3>Accesos Recientes</h3>
-    <div class="row">
-        @foreach (var access in Model.RecentAccesses)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>@access.Timestamp.ToString("g")</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>@access.SecretName</p>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </div>
