@@ -26,7 +26,7 @@ namespace VaultAPI.Controllers
             }
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (userIdClaim == null || !int.TryParse(userIdClaim?.Value, out int userId))  // Usando operador de acceso seguro
             {
                 return Unauthorized();  // 401 si no se puede obtener el userId
             }
