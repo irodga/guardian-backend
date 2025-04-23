@@ -40,8 +40,8 @@ namespace VaultAPI.Controllers
             return success ? Ok(new { path, status = "written" }) : BadRequest("Failed to write secret.");
         }
 
-        [HttpDelete("secret/{*path}/version/{version:int}")]
-        public async Task<IActionResult> DeleteSecretVersion(string path, int version)
+        [HttpDelete("secret-version/{*path}")]
+        public async Task<IActionResult> DeleteSecretVersion(string path, [FromQuery] int version)
         {
             var kv = await GetVaultKVServiceAsync();
             var success = await kv.DeleteSecretVersionAsync(path, version);
