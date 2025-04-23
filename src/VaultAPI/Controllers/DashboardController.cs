@@ -39,7 +39,7 @@ namespace VaultAPI.Controllers
                 .Take(5)
                 .ToListAsync();
 
-            // (Opcional) Obtener accesos recientes
+            // Obtener accesos recientes de auditoría (Cambiar a SecretAuditLogs)
             var recentAccesses = await _context.SecretAuditLogs
                 .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)
@@ -52,7 +52,7 @@ namespace VaultAPI.Controllers
                 SecretsCount = secretsCount,
                 AccessCount = accessCount,
                 RecentSecrets = recentSecrets,
-                RecentAccesses = recentAccesses
+                RecentAccesses = recentAccesses // Ya está usando SecretAuditLog correctamente
             };
 
             return View(dashboardData);  // Enviar el ViewModel a la vista
