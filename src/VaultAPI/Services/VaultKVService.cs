@@ -1,4 +1,4 @@
-// src/VaultAPI/Services/VaultKVService.cs
+// Ruta: src/VaultAPI/Services/VaultKVService.cs
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -43,6 +43,21 @@ namespace VaultAPI.Services
             {
                 options = new { cas = cas },
                 data = new { value = value }
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync(fullPath, content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> WriteSecretRawAsync(string path, Dictionary<string, object> data, int cas = 0)
+        {
+            var fullPath = $"{_vaultAddress}/v1/kv/data/{path}";
+
+            var body = new
+            {
+                options = new { cas = cas },
+                data = data
             };
 
             var content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
