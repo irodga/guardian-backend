@@ -29,7 +29,7 @@
                         </div>
                     }
 
-                    @if (!string.IsNullOrEmpty(ModelState[""].Errors.FirstOrDefault()?.ErrorMessage))
+                    @if (ModelState.IsValid == false)  <!-- Verificamos el estado del modelo -->
                     {
                         <div class="alert alert-danger">
                             Credenciales inválidas.
