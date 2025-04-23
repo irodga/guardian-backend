@@ -1,9 +1,9 @@
-// Ruta: src/VaultAPI/Controllers/DashboardController.cs
+// src/VaultAPI/Controllers/DashboardController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
+using VaultAPI.Models.ViewModels; // Asegúrate de importar el nuevo ViewModel
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-
 
 namespace VaultAPI.Controllers
 {
@@ -47,7 +47,7 @@ namespace VaultAPI.Controllers
                 .ToListAsync();
 
             // Preparar el modelo de datos para la vista
-            var dashboardData = new
+            var dashboardData = new DashboardViewModel
             {
                 SecretsCount = secretsCount,
                 AccessCount = accessCount,
@@ -55,7 +55,7 @@ namespace VaultAPI.Controllers
                 RecentAccesses = recentAccesses
             };
 
-            return View(dashboardData);  // Enviar los datos a la vista
+            return View(dashboardData);  // Enviar el ViewModel a la vista
         }
     }
 }
