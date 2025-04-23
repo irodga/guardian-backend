@@ -4,9 +4,11 @@ using VaultAPI.Models;
 using VaultAPI.Models.Dto;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; // Agregar esta importación para usar [Authorize]
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     [ApiController]
     [Route("secrets")]
     public class SecretsController : Controller

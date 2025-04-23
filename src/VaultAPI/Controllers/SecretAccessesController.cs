@@ -1,10 +1,12 @@
-// src/VaultAPI/Controllers/SecretAccessesController.cs
+// Ruta: src/VaultAPI/Controllers/SecretAccessesController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;  // Importar para usar [Authorize]
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     [ApiController]
     [Route("accesses")]
     public class SecretAccessesController : ControllerBase

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,14 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuración de autenticación y autorización
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Login";  // Redirige al login si no está autenticado
+        options.AccessDeniedPath = "/AccessDenied";  // Ruta cuando el acceso es denegado
+    });
+
 builder.Services.AddDbContext<GuardianDbContext>(options =>
     options.UseMySql(connStr, ServerVersion.AutoDetect(connStr)));
 
@@ -47,9 +56,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+// Autenticación y autorización
+app.UseAuthentication();  // Asegura que se use la autenticación
+app.UseAuthorization();  // Asegura que se use la autorización
+
 app.UseRouting();
-app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapControllerRoute(
@@ -76,4 +87,3 @@ static async Task TestVaultLogin()
         Console.WriteLine("Falló el login IAM con Vault.");
     }
 }
-

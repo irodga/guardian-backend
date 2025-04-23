@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("groups")]
     public class GroupsController : ControllerBase

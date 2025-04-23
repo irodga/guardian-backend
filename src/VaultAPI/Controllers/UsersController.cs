@@ -1,10 +1,12 @@
-// src/VaultAPI/Controllers/UsersController.cs
+// Ruta: src/VaultAPI/Controllers/UsersController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;  // Asegúrate de importar la librería para usar [Authorize]
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     [ApiController]
     [Route("users")]
     public class UsersController : ControllerBase

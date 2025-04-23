@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     public class DashboardController : Controller
     {
         private readonly GuardianDbContext _context;
@@ -18,14 +19,14 @@ namespace VaultAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var userId = int.Parse(User.Identity!.Name!);  // O algún mecanismo para obtener el UserId
+            var userId = int.Parse(User.Identity!.Name!);  // Asegúrate de obtener el UserId desde el contexto de usuario
 
-            // Obtener cantidad de secretos
+            // Obtener cantidad de secretos accesibles
             var secretsCount = await _context.Secrets
                 .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .CountAsync();
 
-            // Obtener cantidad de accesos
+            // Obtener cantidad de accesos de secretos
             var accessCount = await _context.SecretAccesses
                 .Where(sa => sa.UserId == userId)
                 .CountAsync();
@@ -43,6 +44,7 @@ namespace VaultAPI.Controllers
                 .Take(5)
                 .ToListAsync();
 
+            // Preparar el modelo de datos para la vista
             var dashboardData = new
             {
                 SecretsCount = secretsCount,
@@ -51,7 +53,7 @@ namespace VaultAPI.Controllers
                 RecentAccesses = recentAccesses
             };
 
-            return View(dashboardData);
+            return View(dashboardData);  // Enviar los datos a la vista
         }
     }
 }

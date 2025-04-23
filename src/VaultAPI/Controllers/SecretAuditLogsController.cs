@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VaultAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("audit-logs")]
     public class SecretAuditLogsController : ControllerBase

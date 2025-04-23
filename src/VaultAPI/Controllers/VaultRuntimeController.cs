@@ -4,6 +4,7 @@ using VaultAPI.Services;
 
 namespace VaultAPI.Controllers
 {
+    [Authorize] 
     [ApiController]
     [Route("vault")]
     public class VaultRuntimeController : ControllerBase
