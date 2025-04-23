@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using System.Linq;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace VaultAPI.Controllers
 {
@@ -15,17 +17,26 @@ namespace VaultAPI.Controllers
             _db = db;
         }
 
+        // Este método maneja el acceso al login y redirige si el usuario ya está autenticado
         [HttpGet]
         public IActionResult Index(string returnUrl)
         {
-            // Pasamos el returnUrl a la vista a través de ViewData
+            // Si el usuario ya está autenticado, redirigir directamente al Dashboard o al returnUrl
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+
+            // Pasamos el returnUrl a la vista
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
+        // Método POST para manejar la autenticación
         [HttpPost]
-        public IActionResult Index(LoginModel model)
+        public async Task<IActionResult> Index(LoginModel model, string returnUrl)
         {
+            // Validamos que las credenciales sean correctas
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -35,31 +46,40 @@ namespace VaultAPI.Controllers
                 u.Username == model.Username &&
                 u.AuthType == "local");
 
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password?.Trim(), user.PasswordHash))
             {
                 ModelState.AddModelError("", "Usuario o contraseña incorrectos");
                 return View(model);
             }
 
-            var inputPassword = model.Password?.Trim();
-            var result = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
-
-            if (result)
+            // Si las credenciales son correctas, autenticar al usuario
+            var claims = new List<System.Security.Claims.Claim>
             {
-                TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.Username),
+                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
+            };
 
-                // Redirigir a ReturnUrl o a Dashboard por defecto
-                var returnUrl = Request.Query["ReturnUrl"].ToString();
-                if (string.IsNullOrEmpty(returnUrl))
-                {
-                    returnUrl = "/Dashboard";  // Redirigir a Dashboard por defecto si no hay ReturnUrl
-                }
+            var identity = new System.Security.Claims.ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new System.Security.Claims.ClaimsPrincipal(identity);
 
-                return Redirect(returnUrl);  // Redirigir al ReturnUrl
+            // Iniciar sesión
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            // Redirigir a la página solicitada o al Dashboard si no hay ReturnUrl
+            return RedirectToLocal(returnUrl);
+        }
+
+        // Función para redirigir a la URL solicitada si es válida o a la raíz
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
             }
-
-            ModelState.AddModelError("", "Usuario o contraseña incorrectos");
-            return View(model);
+            else
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
         }
     }
 }
