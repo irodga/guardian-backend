@@ -1,8 +1,8 @@
 // Ruta: Controllers/LoginController.cs
 using Microsoft.AspNetCore.Mvc;
-using guardian_backend.Models;
+using VaultAPI.Models;
 
-namespace guardian_backend.Controllers
+namespace VaultAPI.Controllers
 {
     public class LoginController : Controller
     {
