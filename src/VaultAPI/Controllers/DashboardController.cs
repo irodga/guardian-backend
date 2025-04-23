@@ -28,7 +28,7 @@ namespace VaultAPI.Controllers
                 return Forbid();  // Esto devolverá 403 si el usuario no está autenticado
             }
 
-            // Obtener el userId de los claims
+            // Obtener el userId de los claims (esperando que el claim 'NameIdentifier' esté configurado durante el login)
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);  // Usar NameIdentifier si está disponible
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
