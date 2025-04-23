@@ -1,81 +1,77 @@
 @model VaultAPI.Models.ViewModels.DashboardViewModel
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <title>Dashboard - Guardian</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-</head>
-<body class="bg-light">
+@{
+    Layout = "_Layout";
+}
 
-<div class="container mt-5">
-    <h3>Dashboard - Resumen de Secretos</h3>
+<div class="container">
+    <h1>Resumen de Secretos</h1>
 
-    <div class="row">
+    <!-- Menú de opciones para agregar recursos -->
+    <div class="btn-group" role="group" aria-label="Opciones de Dashboard">
+        <a href="@Url.Action("Create", "Secrets")" class="btn btn-primary">Agregar Secreto</a>
+        <a href="@Url.Action("Create", "Companies")" class="btn btn-secondary">Agregar Empresa</a>
+        <a href="@Url.Action("Create", "Groups")" class="btn btn-success">Agregar Grupo</a>
+    </div>
+
+    <!-- Resumen de secretos -->
+    <div class="row mt-4">
         <div class="col-md-6">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-header">Total de Secretos</div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Total de Secretos Accesibles</h4>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">@Model.SecretsCount secretos disponibles</h5>
+                    <p>@Model.SecretsCount</p>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-header">Total de Accesos</div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Total de Accesos a Secretos</h4>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">@Model.AccessCount accesos</h5>
+                    <p>@Model.AccessCount</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <h4>Últimos Secretos</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var secret in Model.RecentSecrets)
-            {
-                <tr>
-                    <td>@secret.Name</td>
-                    <td>@secret.Type</td>
-                    <td>@secret.Expiration?.ToString("dd/MM/yyyy")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <!-- Últimos 5 secretos creados -->
+    <h3>Últimos 5 Secretos Creados</h3>
+    <div class="row">
+        @foreach (var secret in Model.RecentSecrets)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>@secret.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>@secret.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 
-    <h4>Accesos Recientes</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Secreto</th>
-                <th>Acción</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var access in Model.RecentAccesses)
-            {
-                <tr>
-                    <td>@access.Secret.Name</td>
-                    <td>@access.Action</td>
-                    <td>@access.Timestamp.ToString("dd/MM/yyyy HH:mm:ss")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <!-- Accesos recientes -->
+    <h3>Accesos Recientes</h3>
+    <div class="row">
+        @foreach (var access in Model.RecentAccesses)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>@access.Timestamp.ToString("g")</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>@access.SecretName</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
