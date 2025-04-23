@@ -4,6 +4,7 @@ using VaultAPI.Models;
 using VaultAPI.Models.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;  // Importar para ClaimsPrincipal
 
 namespace VaultAPI.Controllers
 {
@@ -21,34 +22,27 @@ namespace VaultAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Asegúrate de que el usuario esté autenticado y que el User.Identity.Name no sea nulo
+            // Verificar que el usuario esté autenticado y obtener el userId de los claims
             if (!User.Identity.IsAuthenticated)
             {
-                // Si no está autenticado, redirige al login o responde con 403
-                return Forbid();  // Esto debería devolver un código 403
+                return Forbid();  // Esto devolverá 403 si el usuario no está autenticado
             }
 
-            var userId = User.Identity.Name;
-
-            if (string.IsNullOrEmpty(userId))
+            // Obtener el userId de los claims
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);  // Usar NameIdentifier si está disponible
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                return Unauthorized();  // Si el userId es nulo o vacío, devuelve 401
-            }
-
-            // Convertir userId de string a int de forma segura
-            if (!int.TryParse(userId, out int parsedUserId))
-            {
-                return Unauthorized();  // Si no se puede convertir, redirigir a 401
+                return Unauthorized();  // Si no se puede obtener o convertir el userId, devuelve 401
             }
 
             // Obtener cantidad de secretos accesibles
             var secretsCount = await _context.Secrets
-                .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == parsedUserId && sa.SecretId == s.Id))
+                .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .CountAsync();
 
             // Obtener cantidad de accesos de secretos
             var accessCount = await _context.SecretAccesses
-                .Where(sa => sa.UserId == parsedUserId)
+                .Where(sa => sa.UserId == userId)
                 .CountAsync();
 
             // Obtener los últimos 5 secretos creados
@@ -59,7 +53,7 @@ namespace VaultAPI.Controllers
 
             // Obtener accesos recientes de auditoría (SecretAuditLogs)
             var recentAccesses = await _context.SecretAuditLogs
-                .Where(log => log.UserId == parsedUserId)
+                .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)
                 .Take(5)
                 .ToListAsync();
