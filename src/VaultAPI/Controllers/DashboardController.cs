@@ -1,4 +1,3 @@
-// src/VaultAPI/Controllers/DashboardController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using VaultAPI.Models.ViewModels;
@@ -45,28 +44,23 @@ namespace VaultAPI.Controllers
                 .Where(sa => sa.UserId == userId)
                 .CountAsync();
 
-            // Obtener los últimos 5 secretos creados
+            // Obtener los últimos 5 secretos creados (sin usar Description)
             var recentSecrets = await _context.Secrets
                 .OrderByDescending(s => s.Id)
                 .Take(5)
+                .Select(s => new {
+                    s.Name
+                })
                 .ToListAsync();
 
-            // Obtener accesos recientes de auditoría (SecretAuditLogs)
+            // Obtener accesos recientes de auditoría (SecretAuditLogs) con relación a Secret
             var recentAccesses = await _context.SecretAuditLogs
                 .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)
                 .Take(5)
-                .ToListAsync();
-
-            // Usamos Include para cargar la relación con Secret (eager loading)
-            var recentAccesses = await _context.SecretAuditLogs
-                .Where(log => log.UserId == userId)
-                .OrderByDescending(log => log.Timestamp)
-                .Take(5)
-                // Include para obtener la relación con Secret
-                .Include(log => log.Secret)  // Esto carga la relación con Secret
+                .Include(log => log.Secret)  // Incluimos la relación con Secret
                 .Select(log => new {
-                    SecretName = log.Secret.Name,  // Aquí accedemos al nombre del secreto relacionado
+                    SecretName = log.Secret.Name,  // Accedemos al nombre del secreto relacionado
                     log.Timestamp
                 })
                 .ToListAsync();
@@ -76,7 +70,7 @@ namespace VaultAPI.Controllers
             {
                 SecretsCount = secretsCount,
                 AccessCount = accessCount,
-                RecentSecrets = recentSecrets,
+                RecentSecrets = recentSecrets.Select(r => r.Name).ToList(),
                 RecentAccesses = recentAccesses
             };
 
