@@ -3,7 +3,7 @@
 
 @{
     Layout = null;
-    var returnUrl = ViewData["ReturnUrl"] as string; // Obtiene el ReturnUrl de ViewData
+    var returnUrl = ViewData["ReturnUrl"] as string;
 }
 
 <!DOCTYPE html>
@@ -29,7 +29,7 @@
                         </div>
                     }
 
-                    @if (ModelState.IsValid == false)  <!-- Verificamos el estado del modelo -->
+                    @if (!ModelState.IsValid)
                     {
                         <div class="alert alert-danger">
                             Credenciales inválidas.
