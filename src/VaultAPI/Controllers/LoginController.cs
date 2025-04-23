@@ -16,60 +16,43 @@ namespace VaultAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;  // Mantener la URL de retorno
             return View();
         }
 
         [HttpPost]
-public IActionResult Index(LoginModel model)
-{
-    Console.WriteLine("🔁 POST /Login/Index recibido");
-
-    if (!ModelState.IsValid)
-    {
-        Console.WriteLine("❌ ModelState inválido");
-        foreach (var error in ModelState)
+        public IActionResult Index(LoginModel model, string? returnUrl)
         {
-            foreach (var sub in error.Value.Errors)
+            if (!ModelState.IsValid)
             {
-                Console.WriteLine($"➡️ Campo: {error.Key} - Error: {sub.ErrorMessage}");
+                return View(model);
             }
+
+            var user = _db.Users.FirstOrDefault(u =>
+                u.Username == model.Username &&
+                u.AuthType == "local");
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Usuario o contraseña incorrectos");
+                return View(model);
+            }
+            
+            var inputPassword = model.Password?.Trim();
+            var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
+
+            if (resultado)
+            {
+                TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
+
+                // Redirigir a la URL de retorno o al dashboard si no hay una URL de retorno
+                return Redirect(returnUrl ?? "/Dashboard");
+            }
+
+            ModelState.AddModelError("", "Usuario o contraseña incorrectos");
+            return View(model);
         }
-        return View(model);
-    }
-
-    Console.WriteLine("========= DEBUG LOGIN =========");
-    Console.WriteLine($"[Usuario ingresado] => '{model.Username}'");
-    Console.WriteLine($"[Password ingresado] => '{model.Password}'");
-
-    var user = _db.Users.FirstOrDefault(u =>
-        u.Username == model.Username &&
-        u.AuthType == "local");
-
-    if (user == null)
-    {
-        Console.WriteLine("❌ Usuario no encontrado en la base");
-    }
-    else
-    {
-        Console.WriteLine($"✅ Usuario encontrado: {user.Username}");
-        Console.WriteLine($"[Hash desde DB] => '{user.PasswordHash}'");
-
-        var inputPassword = model.Password?.Trim();
-        var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
-        Console.WriteLine($"[Resultado de Verify] => {resultado}");
-
-        if (resultado)
-        {
-            TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
-            return RedirectToAction("Index", "Dashboard");
-        }
-    }
-
-    Console.WriteLine("========= END DEBUG =========");
-    ModelState.AddModelError("", "Usuario o contraseña incorrectos");
-    return View(model);
-}
     }
 }
