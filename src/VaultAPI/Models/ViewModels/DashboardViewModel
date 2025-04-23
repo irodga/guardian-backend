@@ -5,7 +5,7 @@ namespace VaultAPI.Models.ViewModels
     {
         public int SecretsCount { get; set; }
         public int AccessCount { get; set; }
-        public List<Secret> RecentSecrets { get; set; } = new List<Secret>();
-        public List<SecretAuditLog> RecentAccesses { get; set; } = new List<SecretAuditLog>();
+        public List<Secret> RecentSecrets { get; set; }
+        public List<SecretAuditLog> RecentAccesses { get; set; }
     }
 }
