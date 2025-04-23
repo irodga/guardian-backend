@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly GuardianDbContext _context;
@@ -17,29 +17,24 @@ namespace VaultAPI.Controllers
             _context = context;
         }
 
-        // GET: /Dashboard
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Verificar que el usuario esté autenticado y obtener el userId de los claims
             if (!User.Identity.IsAuthenticated)
             {
-                return Forbid();  // Esto devolverá 403 si el usuario no está autenticado
+                return Forbid();  // 403 si el usuario no está autenticado
             }
 
-            // Obtener el userId de los claims
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);  // Usar NameIdentifier si está disponible
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim?.Value, out int userId))  // Usando operador de acceso seguro
             {
                 return Unauthorized();  // 401 si no se puede obtener el userId
             }
 
-            // Obtener cantidad de secretos accesibles
             var secretsCount = await _context.Secrets
                 .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .CountAsync();
 
-            // Obtener cantidad de accesos de secretos
             var accessCount = await _context.SecretAccesses
                 .Where(sa => sa.UserId == userId)
                 .CountAsync();
