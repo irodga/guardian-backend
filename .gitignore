@@ -1,0 +1,40 @@
+# .NET build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Rider / VS Code / VS
+.idea/
+.vscode/
+*.swp
+
+# Build results
+*.exe
+*.dll
+*.pdb
+
+# Logs
+*.log
+
+# Secrets / credentials (ajusta según usas)
+secrets.json
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Publish output
+out/
+publish/
+
+# Optional NuGet cache
+*.nupkg
+.nuget/
+
+# Others
+*.db
+*.db-shm
+*.db-wal
