@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VaultAPI.Controllers
 {

@@ -1,6 +1,7 @@
 // src/VaultAPI/Controllers/VaultRuntimeController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace VaultAPI.Controllers
 {
