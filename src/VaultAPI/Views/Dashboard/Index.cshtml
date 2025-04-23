@@ -6,22 +6,8 @@
 
 <div class="container-fluid">
     <div class="row">
-        <!-- Menú de navegación izquierdo -->
-        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="height: 100vh; padding-top: 20px;">
-            <nav class="navbar navbar-light">
-                <div class="navbar-nav flex-column">
-                    <a href="@Url.Action("Index", "Dashboard")" class="nav-item nav-link active">Dashboard</a>
-                    <a href="@Url.Action("Create", "Secrets")" class="nav-item nav-link">Agregar Secreto</a>
-                    <a href="@Url.Action("Index", "Secrets")" class="nav-item nav-link">Ver Secretos</a>
-                    <a href="@Url.Action("Index", "AccessLogs")" class="nav-item nav-link">Accesos Recientes</a>
-                    <a href="@Url.Action("Index", "Companies")" class="nav-item nav-link">Empresas</a>
-                    <a href="@Url.Action("Index", "Groups")" class="nav-item nav-link">Grupos</a>
-                </div>
-            </nav>
-        </div>
-
         <!-- Contenido del Dashboard -->
-        <div class="col-md-9 col-lg-10 ms-sm-auto col-xl-10 px-4" style="padding-left: 30px; padding-right: 30px;">
+        <div class="col-md-9" style="padding-left: 30px; padding-right: 30px;">  <!-- Aseguramos un espaciado adecuado -->
             <h1>Resumen de Secretos</h1>
             <div class="row mt-4">
                 <div class="col-md-6">
