@@ -1,9 +1,8 @@
+// Ruta: Controllers/LoginController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using System.Linq;
 using BCrypt.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace VaultAPI.Controllers
 {
@@ -16,50 +15,61 @@ namespace VaultAPI.Controllers
             _db = db;
         }
 
-        // Este método maneja el acceso al login y redirige si el usuario ya está autenticado
         [HttpGet]
-        public IActionResult Index(string returnUrl)
+        public IActionResult Index()
         {
-            if (User.Identity.IsAuthenticated)
-                return RedirectToLocal(returnUrl);
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View(new LoginModel());
+            return View();
         }
 
-        // Método POST para manejar la autenticación
         [HttpPost]
-        public async Task<IActionResult> Index(LoginModel model, string returnUrl)
+public IActionResult Index(LoginModel model)
+{
+    Console.WriteLine("🔁 POST /Login/Index recibido");
+
+    if (!ModelState.IsValid)
+    {
+        Console.WriteLine("❌ ModelState inválido");
+        foreach (var error in ModelState)
         {
-            if (!ModelState.IsValid)
-                return View(model); // Recargar la vista si el modelo no es válido
-
-            var user = _db.Users.FirstOrDefault(u => u.Username == model.Username && u.AuthType == "local");
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password?.Trim(), user.PasswordHash))
+            foreach (var sub in error.Value.Errors)
             {
-                ModelState.AddModelError("", "Usuario o contraseña incorrectos");
-                return View(model);
+                Console.WriteLine($"➡️ Campo: {error.Key} - Error: {sub.ErrorMessage}");
             }
-
-            // Autenticación del usuario
-            var claims = new List<System.Security.Claims.Claim>
-            {
-                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name, user.Username),
-                new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Role, user.IsAdmin ? "Admin" : "User")
-            };
-
-            var identity = new System.Security.Claims.ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new System.Security.Claims.ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return RedirectToLocal(returnUrl); // Redirigir a la URL solicitada o al Dashboard
         }
+        return View(model);
+    }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+    Console.WriteLine("========= DEBUG LOGIN =========");
+    Console.WriteLine($"[Usuario ingresado] => '{model.Username}'");
+    Console.WriteLine($"[Password ingresado] => '{model.Password}'");
+
+    var user = _db.Users.FirstOrDefault(u =>
+        u.Username == model.Username &&
+        u.AuthType == "local");
+
+    if (user == null)
+    {
+        Console.WriteLine("❌ Usuario no encontrado en la base");
+    }
+    else
+    {
+        Console.WriteLine($"✅ Usuario encontrado: {user.Username}");
+        Console.WriteLine($"[Hash desde DB] => '{user.PasswordHash}'");
+
+        var inputPassword = model.Password?.Trim();
+        var resultado = BCrypt.Net.BCrypt.Verify(inputPassword, user.PasswordHash);
+        Console.WriteLine($"[Resultado de Verify] => {resultado}");
+
+        if (resultado)
         {
-            return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : RedirectToAction("Index", "Dashboard");
+            TempData["LoginMessage"] = $"Bienvenido {user.Username}!";
+            return RedirectToAction("Index", "Dashboard");
         }
+    }
+
+    Console.WriteLine("========= END DEBUG =========");
+    ModelState.AddModelError("", "Usuario o contraseña incorrectos");
+    return View(model);
+}
     }
 }
