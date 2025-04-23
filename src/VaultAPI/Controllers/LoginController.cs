@@ -5,7 +5,6 @@ using System.Linq;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Collections.Generic;
 
 namespace VaultAPI.Controllers
 {
