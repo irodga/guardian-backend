@@ -43,7 +43,6 @@ namespace VaultAPI.Controllers
             var recentSecrets = await _context.Secrets
                 .OrderByDescending(s => s.Id)
                 .Take(5)
-                .Select(s => s.Name)  // Solo los nombres de los secretos
                 .ToListAsync();
 
             // Obtener accesos recientes con relación a Secret
