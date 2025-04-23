@@ -31,7 +31,7 @@
 
 /* Aseguramos que los enlaces del menú se vean bien */
 .nav-item {
-    margin-bottom: 15px;  /* Agregar espacio entre los elementos del menú */
+    margin-bottom: 20px;  /* Agregar más espacio entre los elementos del menú */
 }
 
 /* Estilo del enlace activo */
@@ -46,7 +46,7 @@
     color: #333;  /* Color de texto de los enlaces */
     font-weight: 500; /* Hacemos que el texto sea más legible */
     text-transform: uppercase; /* Capitalizamos los enlaces */
-    padding: 10px;
+    padding: 12px;
     border-radius: 4px;
     transition: background-color 0.3s ease;  /* Transición suave para el hover */
 }
@@ -62,8 +62,8 @@
 
 /* Aseguramos que el contenido del dashboard tenga un buen espaciado */
 .col-md-9 {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
 }
 
 /* Estilo para mejorar la visibilidad del contenido */
@@ -77,6 +77,10 @@
 /* Aseguramos que los íconos del menú tengan espacio y estén alineados */
 .nav-link i {
     margin-right: 10px;  /* Espacio entre el icono y el texto */
+}
+
+.main-content {
+    padding: 20px;  /* Agregar espacio alrededor del contenido */
 }
 </style>
 
@@ -117,7 +121,7 @@
             </nav>
 
             <!-- Main content area -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-4">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-4 main-content">
                 @RenderBody()  <!-- Aquí se renderiza el contenido de cada vista -->
             </main>
         </div>
