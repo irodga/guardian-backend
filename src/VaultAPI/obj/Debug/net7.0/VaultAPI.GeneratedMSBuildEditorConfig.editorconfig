@@ -12,6 +12,10 @@ build_property.RootNamespace = VaultAPI
 build_property.ProjectDir = /home/ivan/guardian-backend/src/VaultAPI/
 build_property.RazorLangVersion = 7.0
 build_property.SupportLocalizedComponentNames = 
-build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = /home/ivan/guardian-backend/src/VaultAPI
 build_property._RazorSourceGeneratorDebug = 
+
+[/home/ivan/guardian-backend/src/VaultAPI/Views/Login/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 

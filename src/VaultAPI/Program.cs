@@ -30,7 +30,8 @@ string dbPass = secrets["password"];
 string connStr = $"Server=guardian-aurora-cluster.cluster-czk5kyvhmiu2.us-east-1.rds.amazonaws.com;Port=3306;Database=guardian;Uid={dbUser};Pwd={dbPass};";
 
 // Configurar servicios
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -49,8 +50,13 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
-app.MapControllers();
 app.UseStaticFiles();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Login}/{action=Index}/{id?}");
+
+app.MapControllers();
 
 await TestVaultLogin();
 app.Run();
@@ -70,3 +76,4 @@ static async Task TestVaultLogin()
         Console.WriteLine("Falló el login IAM con Vault.");
     }
 }
+
