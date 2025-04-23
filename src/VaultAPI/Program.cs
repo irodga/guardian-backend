@@ -65,8 +65,9 @@ app.UseAuthorization();   // Asegura que se use la autorización
 app.UseStaticFiles();  // Archivos estáticos como CSS, JS, imágenes, etc.
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Login}/{action=Index}/{id?}");
+    name: "dashboard",
+    pattern: "Dashboard/Index", 
+    defaults: new { controller = "Dashboard", action = "Index" });
 
 app.MapControllers(); // Esto configura las rutas de los controladores
 
