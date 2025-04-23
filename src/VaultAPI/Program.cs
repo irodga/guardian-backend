@@ -57,18 +57,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Autenticación y autorización
+/ Rutas y configuración de autenticación
+app.UseRouting(); // Asegura que las rutas estén configuradas antes de autenticación
 app.UseAuthentication();  // Asegura que se use la autenticación
-app.UseAuthorization();  // Asegura que se use la autorización
+app.UseAuthorization();   // Asegura que se use la autorización
 
-app.UseRouting(); // Asegura que las rutas estén configuradas después de la autenticación y autorización
-app.UseStaticFiles(); // Archivos estáticos como CSS, JS, imágenes, etc.
+app.UseStaticFiles();  // Archivos estáticos como CSS, JS, imágenes, etc.
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");
 
-app.MapControllers();
+app.MapControllers(); // Esto configura las rutas de los controladores
 
 await TestVaultLogin();
 app.Run();
