@@ -54,7 +54,7 @@ namespace VaultAPI.Controllers
                 .ToListAsync();
 
             // Obtener accesos recientes de auditoría (SecretAuditLogs) con relación a Secret
-            var recentAccesses = await _context.SecretAuditLogs
+            var recentAccesses = await _context.Secrets
                 .Where(log => log.UserId == userId)
                 .OrderByDescending(log => log.Timestamp)
                 .Take(5)
