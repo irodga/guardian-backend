@@ -66,10 +66,9 @@ app.UseStaticFiles();  // Archivos estáticos como CSS, JS, imágenes, etc.
 
 // Rutas de controladores
 app.MapControllerRoute(
-    name: "login",
-    pattern: "Login/Index", 
-    defaults: new { controller = "Login", action = "Index" });
-    
+    name: "default",
+    pattern: "{controller=Login}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "dashboard",
     pattern: "Dashboard/Index", 
