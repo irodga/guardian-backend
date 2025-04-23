@@ -1,7 +1,7 @@
 // Ruta: Models/LoginModel.cs
 using System.ComponentModel.DataAnnotations;
 
-namespace guardian_backend.Models
+namespace VaultAPI.Models
 {
     public class LoginModel
     {
