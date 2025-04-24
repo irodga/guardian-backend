@@ -5,8 +5,7 @@ namespace VaultAPI.Models.Dto
 {
     public class CreateGroupDto
     {
-        [Required(ErrorMessage = "El nombre del grupo es obligatorio.")]
-        [StringLength(120, ErrorMessage = "El nombre del grupo no puede exceder los 120 caracteres.")]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;  // Sin validaciones
     }
+}
 }
