@@ -94,7 +94,8 @@ namespace VaultAPI.Controllers
                     { "data", base64File }
                 };
 
-                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, fileData);  // Usamos el método WriteSecretRawAsync
+                // Usar el método WriteSecretRawAsync que debe estar implementado en VaultKVService
+                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, fileData);  // Aquí se usa el método WriteSecretRawAsync
             }
 
             if (!vaultSuccess)
