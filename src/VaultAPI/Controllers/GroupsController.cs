@@ -1,6 +1,6 @@
 // Ruta: src/VaultAPI/Controllers/GroupsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models;
+using VaultAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
