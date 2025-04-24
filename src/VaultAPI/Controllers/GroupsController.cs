@@ -28,37 +28,16 @@ namespace VaultAPI.Controllers
                 .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
                 .ToListAsync();
 
-            // Si no hay grupos, se devuelve un mensaje indicando que no hay datos
-            if (groups == null || groups.Count == 0)
-            {
-                return Ok(new { message = "No hay grupos registrados." });
-            }
-
-            return Ok(groups);  // Devuelve la lista de grupos
-        }
-
-        // Obtener un grupo por su ID
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var group = await _context.Groups
-                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
-                .FirstOrDefaultAsync(g => g.Id == id);
-
-            if (group == null)
-                return NotFound("Grupo no encontrado.");
-
-            return Ok(group);
+            // Si no hay grupos, pasa una lista vacía a la vista
+            return View(groups);  // Siempre pasa los datos (o lista vacía) a la vista
         }
 
         // Crear un nuevo grupo (solo accesible para administradores)
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGroupDto dto)
         {
-            // Obtener el claim de "Role" directamente desde los claims del usuario
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            // Verificar que el usuario tenga el rol de "Admin"
             if (role != "Admin")
             {
                 return Unauthorized("No tienes permisos para crear un grupo.");
@@ -84,10 +63,8 @@ namespace VaultAPI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            // Obtener el claim de "Role" directamente desde los claims del usuario
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            // Verificar que el usuario tenga el rol de "Admin"
             if (role != "Admin")
             {
                 return Unauthorized("No tienes permisos para eliminar un grupo.");
