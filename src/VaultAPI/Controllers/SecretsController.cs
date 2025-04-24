@@ -31,6 +31,7 @@ namespace VaultAPI.Controllers
         [HttpGet("")]
         public IActionResult IndexRedirect()
         {
+            _logger.LogInformation("Redirigiendo a la página de índice de secretos.");
             return RedirectToAction("Index");
         }
 
@@ -40,7 +41,7 @@ namespace VaultAPI.Controllers
         {
             _logger.LogInformation("Obteniendo todos los secretos desde la base de datos.");
             var secrets = _context.Secrets.ToList();
-            _logger.LogInformation("Se secretos obtenidos: {SecretCount}", secrets.Count);
+            _logger.LogInformation("Cantidad de secretos obtenidos: {SecretCount}", secrets.Count);
             return View(secrets);  // Aquí se pasa la lista de secretos a la vista
         }
 
@@ -48,22 +49,20 @@ namespace VaultAPI.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
-            _logger.LogInformation("Cargando empresas y grupos desde la base de datos.");
+            _logger.LogInformation("Cargando empresas desde la base de datos.");
 
-            // Cargar las empresas y grupos desde la base de datos
+            // Cargar las empresas desde la base de datos (sin los grupos)
             var companies = _context.Companies.ToList();
-            var groups = _context.Groups.ToList();
 
             _logger.LogInformation("Empresas cargadas: {CompanyCount}", companies.Count);
-            _logger.LogInformation("Grupos cargados: {GroupCount}", groups.Count);
 
             // Crear el modelo para pasarlo a la vista
             var model = new CreateSecretDto
             {
-                Companies = companies,
-                Groups = groups
+                Companies = companies
             };
 
+            _logger.LogInformation("Modelo de creación de secreto preparado para la vista.");
             return View(model);  // Pasamos CreateSecretDto a la vista
         }
 
@@ -71,18 +70,19 @@ namespace VaultAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
-            _logger.LogInformation("Recibido formulario para crear secreto. Datos recibidos:");
+            _logger.LogInformation("Formulario recibido para crear secreto. Datos recibidos:");
 
             // Log de los datos recibidos
-            _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}", dto.Name, dto.Type, dto.CompanyId);
-            
+            _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, Value: {Value}",
+                dto.Name, dto.Type, dto.CompanyId, dto.Value);
+
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("El modelo no es válido. Errores: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 return View(dto);
             }
 
-            // Verificar CompanyId
+            // Verificar que CompanyId no esté vacío (0)
             if (dto.CompanyId == 0)
             {
                 _logger.LogError("CompanyId no ha sido seleccionado o es inválido.");
@@ -90,11 +90,11 @@ namespace VaultAPI.Controllers
                 return View(dto);
             }
 
-            _logger.LogInformation("Creando VaultPath...");
+            _logger.LogInformation("Generando VaultPath...");
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
-            // Log del tipo de secreto y acción tomada
+            // Log de la operación de tipo de secreto
             if (dto.Type == "password")
             {
                 _logger.LogInformation("Creando secreto de tipo 'password'.");
@@ -123,7 +123,7 @@ namespace VaultAPI.Controllers
                 return View(dto);
             }
 
-            _logger.LogInformation("Guardando secreto en la base de datos...");
+            _logger.LogInformation("Guardando el secreto en la base de datos...");
             var secret = new Secret
             {
                 Name = dto.Name,
