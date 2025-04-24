@@ -1,7 +1,7 @@
 // Ruta: src/VaultAPI/Models/Dto/CreateGroupDto.cs
 using System.ComponentModel.DataAnnotations;
 
-namespace VaultAPI.Models
+namespace VaultAPI.Models.Dto
 {
     public class CreateGroupDto
     {
