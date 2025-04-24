@@ -28,25 +28,10 @@ namespace VaultAPI.Controllers
                 .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
                 .ToListAsync();
 
-            // Si no hay grupos, se pasa una lista vacía a la vista
             return View("Index", groups);  // Siempre pasa los datos (o lista vacía) a la vista
         }
 
-        // Obtener un grupo por su ID
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var group = await _context.Groups
-                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
-                .FirstOrDefaultAsync(g => g.Id == id);
-
-            if (group == null)
-                return NotFound("Grupo no encontrado.");
-
-            return View(group);  // Pasa el grupo a la vista
-        }
-
-        // Mostrar el formulario para crear un nuevo grupo (GET)
+        // Crear un nuevo grupo (solo accesible para administradores)
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -57,6 +42,12 @@ namespace VaultAPI.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] CreateGroupDto dto)
         {
+            // Verificar si la validación no pasó
+            if (!ModelState.IsValid)
+            {
+                return View(dto);  // Retorna la vista con los errores de validación
+            }
+
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
             if (role != "Admin")
