@@ -7,7 +7,12 @@ using Amazon.Runtime.CredentialManagement;
 
 public class VaultIamAuthService
 {
-    private readonly HttpClient _http = new HttpClient();
+    private readonly HttpClient _http;
+
+    public VaultIamAuthService()
+    {
+        _http = new HttpClient();
+    }
 
     public async Task<string?> LoginAsync()
     {
