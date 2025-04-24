@@ -1,6 +1,6 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models.Dto;  // Importa el namespace correcto para 'CreateSecretDto'
+using VaultAPI.Models.Dto;
 using VaultAPI.Models;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -35,27 +35,20 @@ namespace VaultAPI.Controllers
         [HttpGet("index")]
         public IActionResult Index()
         {
-            // Obtener todos los secretos de la base de datos para la vista
             var secrets = _context.Secrets.ToList();
-            return View(secrets);  // Aquí se pasa la lista de secretos a la vista
+            return View(secrets);
         }
 
         // GET: /Secrets/Create
         [HttpGet("create")]
         public IActionResult Create()
         {
-            // Cargar las empresas y grupos desde la base de datos
             var companies = _context.Companies.ToList();
-            var groups = _context.Groups.ToList();
-
-            // Crear el modelo para pasarlo a la vista
             var model = new CreateSecretDto
             {
-                Companies = companies,
-                Groups = groups
+                Companies = companies
             };
-
-            return View(model);  // Pasamos CreateSecretDto a la vista
+            return View(model);
         }
 
         // POST: /Secrets/Create
@@ -67,23 +60,6 @@ namespace VaultAPI.Controllers
                 return View(dto);
             }
 
-            // Validación adicional para asegurarnos de que los campos requeridos no estén vacíos
-            if (dto.Companies == null || !dto.Companies.Any())
-            {
-                ModelState.AddModelError("Companies", "Debe seleccionar al menos una empresa.");
-            }
-
-            if (dto.Groups == null || !dto.Groups.Any())
-            {
-                ModelState.AddModelError("Groups", "Debe seleccionar al menos un grupo.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(dto);  // Regresamos la vista con los errores de validación
-            }
-
-            // Generar VaultPath
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
@@ -93,7 +69,6 @@ namespace VaultAPI.Controllers
             }
             else if (dto.Type == "fiel" && dto.Files != null)
             {
-                // Manejar archivos tipo "fiel"
                 using var memoryStream = new MemoryStream();
                 await dto.Files[0].CopyToAsync(memoryStream);
                 var base64File = Convert.ToBase64String(memoryStream.ToArray());
@@ -113,7 +88,6 @@ namespace VaultAPI.Controllers
                 return View(dto);
             }
 
-            // Guardar en la base de datos
             var secret = new Secret
             {
                 Name = dto.Name,
@@ -127,7 +101,6 @@ namespace VaultAPI.Controllers
             _context.Secrets.Add(secret);
             await _context.SaveChangesAsync();
 
-            // Insertar acceso automático para el usuario que lo crea
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             var secretAccess = new SecretAccess
             {

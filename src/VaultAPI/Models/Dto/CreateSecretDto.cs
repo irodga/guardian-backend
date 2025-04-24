@@ -26,6 +26,5 @@ namespace VaultAPI.Models.Dto
 
         // Nuevas propiedades agregadas para las empresas y grupos
         public List<Company> Companies { get; set; }  // Lista de empresas asociadas
-        public List<Group> Groups { get; set; }  // Lista de grupos de empresas asociados
     }
 }
