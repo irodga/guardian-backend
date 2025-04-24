@@ -11,7 +11,7 @@ namespace VaultAPI.Controllers
     [Authorize]
     [ApiController]
     [Route("groups")]
-    public class GroupsController : ControllerBase
+    public class GroupsController : Controller  // Cambiado de ControllerBase a Controller
     {
         private readonly GuardianDbContext _context;
 
@@ -28,8 +28,22 @@ namespace VaultAPI.Controllers
                 .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
                 .ToListAsync();
 
-            // Si no hay grupos, pasa una lista vacía a la vista
+            // Si no hay grupos, se pasa una lista vacía a la vista
             return View(groups);  // Siempre pasa los datos (o lista vacía) a la vista
+        }
+
+        // Obtener un grupo por su ID
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var group = await _context.Groups
+                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (group == null)
+                return NotFound("Grupo no encontrado.");
+
+            return View(group);  // Pasa el grupo a la vista
         }
 
         // Crear un nuevo grupo (solo accesible para administradores)
@@ -56,7 +70,8 @@ namespace VaultAPI.Controllers
             _context.Groups.Add(group);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = group.Id }, group);
+            // Redirige a la acción GetById después de crear el grupo
+            return RedirectToAction(nameof(GetById), new { id = group.Id });
         }
 
         // Eliminar un grupo (solo accesible para administradores)
