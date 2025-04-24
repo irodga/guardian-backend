@@ -1,7 +1,7 @@
 // Ruta: src/VaultAPI/Models/Dto/CompanyDto.cs
 namespace VaultAPI.Models.Dto
 {
-    public class CompanyDto
+    public class CreateCompanyDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
