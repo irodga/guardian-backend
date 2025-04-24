@@ -1,6 +1,6 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models.Dto;  // Importa el namespace correcto para 'CreateSecretDto'
+using VaultAPI.Models.Dto;
 using VaultAPI.Models;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -109,6 +109,15 @@ namespace VaultAPI.Controllers
 
             TempData["LoginMessage"] = "¡Secreto creado correctamente!";
             return RedirectToAction("Index", "Secrets");
+        }
+
+        // GET: /Secrets/Index
+        [HttpGet("index")]
+        public IActionResult Index()
+        {
+            // Obtener todos los secretos de la base de datos para la vista
+            var secrets = _context.Secrets.ToList();
+            return View(secrets);  // Aquí se pasa la lista de secretos a la vista
         }
     }
 }
