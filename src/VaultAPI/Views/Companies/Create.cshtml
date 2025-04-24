@@ -64,18 +64,18 @@
                 <select id="groupId" name="GroupId" class="form-control" required>
                     <option value="">Seleccione un grupo</option>
 
-                    <!-- Verificar que ViewBag.Groups no sea nulo y recorrerlo -->
-                    @if (ViewBag.Groups != null)
-                    {
-                        foreach (var group in ViewBag.Groups as SelectList)
-                        {
-                            <option value="@group.Value">@group.Text</option>
-                        }
-                    }
-                    else
-                    {
-                        <option disabled>No hay grupos disponibles</option>
-                    }
+                    <!-- Verificar que ViewBag.Groups no sea nulo y que sea un SelectList -->
+    @if (ViewBag.Groups != null && ViewBag.Groups is SelectList groups)
+    {
+        foreach (var group in groups)
+        {
+            <option value="@group.Value">@group.Text</option>
+        }
+    }
+    else
+    {
+        <option disabled>No hay grupos disponibles</option>
+    }
                 </select>
                 @if (ViewData.ModelState["GroupId"]?.Errors.Count > 0)
                 {
