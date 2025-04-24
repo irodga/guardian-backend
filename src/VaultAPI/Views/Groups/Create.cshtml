@@ -44,11 +44,12 @@
     <div class="form-container">
         <h1 class="text-center text-primary">@ViewData["Title"]</h1>
 
+        <!-- Verifica que Model no sea null -->
         <form method="post" action="/groups/create">
             <div class="form-group">
                 <label for="groupName">Nombre del Grupo</label>
-                <!-- Asegúrate de que el atributo name="Name" coincida con la propiedad del modelo -->
-                <input type="text" id="groupName" name="Name" class="form-control" value="@Model.Name" required placeholder="Nombre del grupo" />
+                <!-- Asegura que el modelo no sea null y tenga un valor -->
+                <input type="text" id="groupName" name="Name" class="form-control" value="@Model?.Name" required placeholder="Nombre del grupo" />
                 @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
                 {
                     <div class="error-message">
