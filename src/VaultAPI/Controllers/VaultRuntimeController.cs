@@ -1,16 +1,16 @@
-// src/VaultAPI/Controllers/VaultRuntimeController.cs
+// Ruta: src/VaultAPI/Controllers/VaultRuntimeController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;  // Para usar IOptions
-
+using VaultAPI;
 
 namespace VaultAPI.Controllers
 {
     [Authorize] 
     [ApiController]
     [Route("vault")]
-     public class VaultRuntimeController : ControllerBase
+    public class VaultRuntimeController : ControllerBase
     {
         // Mantener la dirección de Vault hardcodeada como estaba
         private readonly string _vaultAddress = "https://api.secrets-guardian.online";
