@@ -42,7 +42,14 @@ namespace VaultAPI.Controllers
                 return Unauthorized();  // Si no se encuentra el userId en los claims, devolver 401
             }
 
-            // Ahora puedes realizar la consulta con userId
+            // Lógica de control de acceso
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;  // Obtener el rol del usuario desde los claims
+            if (role != "Admin")  // Si el usuario no es admin, solo puede ver sus propios secretos
+            {
+                return Forbid();  // Denegar acceso si no tiene el rol adecuado
+            }
+
+            // Ahora puedes realizar la consulta con userId (solo si el usuario es Admin)
             var secrets = await _context.Secrets
                 .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .Include(s => s.Company)
