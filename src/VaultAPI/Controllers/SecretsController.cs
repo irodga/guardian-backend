@@ -1,7 +1,7 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
+using VaultAPI.Models.Dto;  // Importa el namespace correcto para 'CreateSecretDto'
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
+    [Authorize]
     [ApiController]
     [Route("secrets")]
     public class SecretsController : Controller
@@ -28,18 +28,18 @@ namespace VaultAPI.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
-            // Cargar las empresas desde la base de datos
+            // Cargar las empresas y grupos desde la base de datos
             var companies = _context.Companies.ToList();
-            var groups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
+            var groups = _context.Groups.ToList();
 
-            // Crear un modelo para pasarlo a la vista
-            var model = new CreateSecretViewModel
+            // Crear el modelo para pasarlo a la vista
+            var model = new CreateSecretDto
             {
                 Companies = companies,
                 Groups = groups
             };
 
-            return View(model); // Pasamos CreateSecretViewModel a la vista
+            return View(model);  // Pasamos CreateSecretDto a la vista
         }
 
         // POST: /Secrets/Create
@@ -96,7 +96,7 @@ namespace VaultAPI.Controllers
             await _context.SaveChangesAsync();
 
             // Insertar acceso automático para el usuario que lo crea
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);  // Usamos el Claim de NameIdentifier para obtener el userId
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             var secretAccess = new SecretAccess
             {
                 UserId = userId,

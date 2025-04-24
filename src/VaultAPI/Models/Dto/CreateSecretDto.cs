@@ -1,4 +1,3 @@
-// Ruta: src/VaultAPI/Models/Dto/CreateSecretDto.cs
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
@@ -23,5 +22,9 @@ namespace VaultAPI.Models.Dto
 
         [Required]
         public int CompanyId { get; set; }  // ID de la empresa asociada
+
+        // Nuevas propiedades agregadas para las empresas y grupos
+        public List<Company> Companies { get; set; }  // Lista de empresas asociadas
+        public List<Group> Groups { get; set; }  // Lista de grupos de empresas asociados
     }
 }
