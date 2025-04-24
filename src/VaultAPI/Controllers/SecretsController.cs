@@ -42,7 +42,7 @@ namespace VaultAPI.Controllers
             _logger.LogInformation("Obteniendo todos los secretos desde la base de datos.");
             var secrets = _context.Secrets.ToList();
             _logger.LogInformation("Cantidad de secretos obtenidos: {SecretCount}", secrets.Count);
-            return View(secrets);
+            return View(secrets);  // Aquí se pasa la lista de secretos a la vista
         }
 
         // GET: /Secrets/Create
@@ -70,22 +70,37 @@ namespace VaultAPI.Controllers
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             _logger.LogInformation("Formulario recibido para crear secreto. Datos recibidos:");
-            _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, Value: {Value}",
-                dto.Name, dto.Type, dto.CompanyId, dto.Value);
 
-            // Saltar validaciones del modelo
-            // Verificar que CompanyId no esté vacío (0)
+            // Log de los datos recibidos
+            _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, FilesCount: {FilesCount}, Expiration: {Expiration}",
+                dto.Name, dto.Type, dto.CompanyId, dto.Files?.Count ?? 0, dto.Expiration);
+
+            // Verificar si CompanyId es válido (no 0)
             if (dto.CompanyId == 0)
             {
                 _logger.LogError("El CompanyId no ha sido seleccionado o es inválido.");
                 ModelState.AddModelError("CompanyId", "Debe seleccionar una empresa.");
-                return View(dto);
+            }
+
+            // Revisar el valor de Companies en el DTO recibido
+            _logger.LogInformation("Recibido Companies: {CompaniesCount}", dto.Companies?.Count ?? 0);
+
+            // Mostrar el contenido del ModelState para ver si hay algún error relacionado con "Companies"
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Modelo no válido. Errores en el modelo:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    _logger.LogWarning("Error: {ErrorMessage}", error.ErrorMessage);
+                }
+                return View(dto);  // Si el modelo no es válido, retornar a la vista
             }
 
             _logger.LogInformation("Generando VaultPath...");
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
+            // Log de la operación de tipo de secreto
             if (dto.Type == "password")
             {
                 _logger.LogInformation("Creando secreto de tipo 'password'.");
