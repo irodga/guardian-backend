@@ -76,22 +76,22 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "secrets",
-    pattern: "Secrets/Index", 
+    pattern: "secrets/index",  // Cambiado a 'secrets/index'
     defaults: new { controller = "Secrets", action = "Index" });
 
 app.MapControllerRoute(
     name: "secretCreate",
-    pattern: "Secrets/Create", 
+    pattern: "secrets/create",  // Cambiado a 'secrets/create'
     defaults: new { controller = "Secrets", action = "Create" });
 
 app.MapControllerRoute(
     name: "secretView",
-    pattern: "Secrets/View/{id:int}",
+    pattern: "secrets/view/{id:int}",  // Cambiado a 'secrets/view/{id:int}'
     defaults: new { controller = "Secrets", action = "View" });
 
 app.MapControllerRoute(
     name: "secretDelete",
-    pattern: "Secrets/Delete/{id:int}",
+    pattern: "secrets/delete/{id:int}",  // Cambiado a 'secrets/delete/{id:int}'
     defaults: new { controller = "Secrets", action = "Delete" });
 
 app.MapControllerRoute(
