@@ -119,7 +119,7 @@ namespace VaultAPI.Controllers
             await _context.SaveChangesAsync();
 
             // Insertar acceso automático para el usuario que lo crea
-            var userId = int.Parse(User.Identity.Name!);  // Asegúrate de obtener el userId de la sesión
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);  // Usamos el Claim de NameIdentifier para obtener el userId
             var secretAccess = new SecretAccess
             {
                 UserId = userId,
