@@ -32,6 +32,16 @@ namespace VaultAPI.Controllers
             var companies = _context.Companies.Include(c => c.Group).ToList();  // Asegúrate de incluir los grupos
             var groups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
 
+            if (companies == null || !companies.Any()) {
+                ModelState.AddModelError("", "No hay empresas disponibles.");
+                return View(); // Retorna la vista si no hay empresas
+            }
+
+            if (groups == null || !groups.Any()) {
+                ModelState.AddModelError("", "No hay grupos de empresas disponibles.");
+                return View(); // Retorna la vista si no hay grupos de empresas
+            }
+
             // Crear un modelo para pasarlo a la vista
             var model = new CreateSecretViewModel
             {
