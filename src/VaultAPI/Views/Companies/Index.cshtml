@@ -1,0 +1,75 @@
+<!-- Ruta: src/VaultAPI/Views/Companies/Index.cshtml -->
+@model IEnumerable<VaultAPI.Models.Dto.CompanyDto>
+
+@{
+    ViewData["Title"] = "Listado de Empresas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center text-primary">@ViewData["Title"]</h1>
+
+    <!-- Tabla para listar las empresas -->
+    <div class="table-container">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre de la Empresa</th>
+                    <th>Grupo Asociado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var company in Model)
+                {
+                    <tr>
+                        <td>@company.Name</td>
+                        <td>@company.GroupName</td>
+                        <td>
+                            <a href="#" class="btn btn-warning btn-sm">Editar</a> 
+                            <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Enlace para crear una nueva empresa -->
+<div class="text-center mt-4">
+    <a href="/companies/create" class="btn btn-success">Crear Nueva Empresa</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

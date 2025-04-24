@@ -1,15 +1,17 @@
-// src/VaultAPI/Controllers/CompaniesController.cs
+// Ruta: src/VaultAPI/Controllers/CompaniesController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
+using VaultAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
     [Authorize]
     [ApiController]
     [Route("companies")]
-    public class CompaniesController : ControllerBase
+    public class CompaniesController : Controller
     {
         private readonly GuardianDbContext _context;
 
@@ -18,55 +20,63 @@ namespace VaultAPI.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        // Obtener todos los grupos disponibles para la selección (al crear una empresa)
+        [HttpGet("create")]
+        public IActionResult Create()
         {
-            var companies = await _context.Companies
-                .Include(c => c.Group)
-                .ToListAsync();
-
-            return Ok(companies);
+            var groups = _context.Groups.ToList();  // Obtener todos los grupos
+            ViewBag.Groups = new SelectList(groups, "Id", "Name");  // Pasar los grupos a la vista
+            return View();
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        // Crear una nueva empresa (POST)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] CreateCompanyDto dto)
         {
-            var company = await _context.Companies
-                .Include(c => c.Group)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            if (!ModelState.IsValid)
+            {
+                // Si hay errores en el modelo, retornar a la vista con los errores
+                var groups = _context.Groups.ToList();
+                ViewBag.Groups = new SelectList(groups, "Id", "Name");
+                return View(dto);
+            }
 
-            if (company == null)
-                return NotFound();
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role != "Admin")
+            {
+                return Unauthorized("No tienes permisos para crear una empresa.");
+            }
 
-            return Ok(company);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateCompanyDto dto)
-        {
             var company = new Company
             {
                 Name = dto.Name,
-                GroupId = dto.GroupId
+                GroupId = dto.GroupId  // Asocia la empresa al grupo seleccionado
             };
 
             _context.Companies.Add(company);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = company.Id }, company);
+            return RedirectToAction("Index", "Companies");  // Redirigir a la lista de empresas
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        // Obtener todas las empresas
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            var company = await _context.Companies.FindAsync(id);
-            if (company == null)
-                return NotFound();
+            var companies = await _context.Companies
+                .Include(c => c.Group)  // Incluye el grupo asociado
+                .ToListAsync();
 
-            _context.Companies.Remove(company);
-            await _context.SaveChangesAsync();
+            // Convertir las empresas al DTO
+            var companyDtos = companies.Select(c => new CompanyDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                GroupId = c.GroupId,
+                GroupName = c.Group.Name  // Obtener el nombre del grupo asociado
+            }).ToList();
 
-            return NoContent();
+            return View("Index", companyDtos);  // Pasa el DTO a la vista
         }
     }
 }
