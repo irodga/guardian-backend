@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;  // Para usar IOptions
-using VaultAPI;
 
 namespace VaultAPI.Controllers
 {
@@ -12,7 +11,7 @@ namespace VaultAPI.Controllers
     [Route("vault")]
     public class VaultRuntimeController : ControllerBase
     {
-        // Mantener la dirección de Vault hardcodeada como estaba
+        // Mantenemos la dirección hardcodeada de Vault
         private readonly string _vaultAddress = "https://api.secrets-guardian.online";
         
         private readonly VaultIamAuthService _vaultIamAuthService;
@@ -28,7 +27,7 @@ namespace VaultAPI.Controllers
         {
             // Usamos el servicio inyectado para obtener el token
             var token = await _vaultIamAuthService.LoginAsync();
-            return new VaultKVService(_vaultAddress, token!);  // Pasamos la URL y el token
+            return new VaultKVService(_vaultAddress, token!);  // Pasamos la URL hardcodeada y el token
         }
 
         [HttpGet("secret/{*path}")]
