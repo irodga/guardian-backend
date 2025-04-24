@@ -52,7 +52,6 @@ builder.Services.AddDbContext<GuardianDbContext>(options =>
 
 var app = builder.Build();
 
-
 // Configurar el middleware
 if (app.Environment.IsDevelopment())
 {
@@ -142,4 +141,3 @@ static async Task TestVaultLogin()
         Console.WriteLine("Falló el login IAM con Vault.");
     }
 }
-
