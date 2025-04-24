@@ -46,9 +46,16 @@ namespace VaultAPI.Controllers
             return View(group);  // Pasa el grupo a la vista
         }
 
-        // Crear un nuevo grupo (solo accesible para administradores)
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateGroupDto dto)
+        // Mostrar el formulario para crear un nuevo grupo (GET)
+        [HttpGet("create")]
+        public IActionResult Create()
+        {
+            return View();  // Devuelve la vista de creación de grupo
+        }
+
+        // Crear un nuevo grupo (POST)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] CreateGroupDto dto)
         {
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
