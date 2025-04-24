@@ -5,6 +5,7 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using VaultAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
