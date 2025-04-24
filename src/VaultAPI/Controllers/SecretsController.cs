@@ -18,7 +18,6 @@ namespace VaultAPI.Controllers
         private readonly GuardianDbContext _context;
         private readonly VaultKVService _vaultKvService;
 
-        // Constructor donde inyectamos GuardianDbContext y VaultKVService
         public SecretsController(GuardianDbContext context, VaultKVService vaultKvService)
         {
             _context = context;
@@ -42,18 +41,34 @@ namespace VaultAPI.Controllers
                 return Unauthorized();  // Si no se encuentra el userId en los claims, devolver 401
             }
 
-            // Obtener el rol del usuario desde los claims
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            // Obtener el rol del usuario desde la base de datos
+            var user = await _context.Users
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
 
-            // Filtrar los secretos a los que el usuario tiene acceso
+            if (user == null)
+            {
+                return Unauthorized();  // Si no se encuentra el usuario, devolver 401
+            }
+
+            // Si el usuario es Admin, puede ver todos los secretos
+            if (user.IsAdmin)
+            {
+                var allSecrets = await _context.Secrets
+                    .Include(s => s.Company)
+                    .ToListAsync();
+
+                return View(allSecrets);  // Devuelve todos los secretos para los usuarios Admin
+            }
+
+            // Si el usuario no es Admin, filtrar los secretos a los que tiene acceso
             var secrets = await _context.Secrets
                 .Where(s => _context.SecretAccesses
                     .Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
                 .Include(s => s.Company)
                 .ToListAsync();
 
-            // El acceso siempre se permite, pero solo se mostrarán los secretos permitidos
-            return View(secrets);  // Devuelve la vista con los secretos que el usuario tiene permitido ver
+            return View(secrets);  // Devuelve la vista con los secretos accesibles para el usuario
         }
 
         // GET: /Secrets/Create
@@ -76,7 +91,6 @@ namespace VaultAPI.Controllers
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
-            // Lógica para guardar el secreto en Vault
             if (dto.Type == "password")
             {
                 vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Value!);
@@ -94,8 +108,7 @@ namespace VaultAPI.Controllers
                     { "data", base64File }
                 };
 
-                // Usar el método WriteSecretRawAsync que debe estar implementado en VaultKVService
-                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, fileData);  // Aquí se usa el método WriteSecretRawAsync
+                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, fileData);
             }
 
             if (!vaultSuccess)
