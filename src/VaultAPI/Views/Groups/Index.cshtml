@@ -1,0 +1,50 @@
+<!-- Ruta: src/VaultAPI/Views/Groups/Index.cshtml -->
+@model IEnumerable<VaultAPI.Models.Group>
+
+@{
+    ViewData["Title"] = "Listado de Grupos";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (Model == null || !Model.Any())
+{
+    <div>No hay grupos registrados.</div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre del Grupo</th>
+                <th>Empresas Asociadas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in Model)
+            {
+                <tr>
+                    <td>@group.Name</td>
+                    <td>
+                        @if (group.Companies.Any())
+                        {
+                            foreach (var company in group.Companies)
+                            {
+                                <div>@company.Name</div>
+                            }
+                        }
+                        else
+                        {
+                            <div>No hay empresas asociadas</div>
+                        }
+                    </td>
+                    <td>
+                        <!-- Puedes agregar botones de editar o eliminar aquí -->
+                        <a href="#">Editar</a> | <a href="#">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

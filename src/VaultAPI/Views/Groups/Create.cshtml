@@ -1,0 +1,54 @@
+<!-- Ruta: src/VaultAPI/Views/Groups/Create.cshtml -->
+@model VaultAPI.Models.Dto.CreateGroupDto
+
+@{
+    ViewData["Title"] = "Crear Grupo";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form id="createGroupForm">
+    <div class="form-group">
+        <label for="Name">Nombre del Grupo</label>
+        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+        @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
+        {
+            <div class="text-danger">
+                @foreach (var error in ViewData.ModelState["Name"].Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear Grupo</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#createGroupForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var groupData = {
+                    Name: $('#Name').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/groups', // Asegúrate de que esta URL coincida con la ruta de tu controlador
+                    data: JSON.stringify(groupData),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        alert("¡Grupo creado con éxito!");
+                        window.location.href = '/groups';  // Redirige al listado de grupos
+                    },
+                    error: function(error) {
+                        alert("Hubo un error al crear el grupo.");
+                    }
+                });
+            });
+        });
+    </script>
+}

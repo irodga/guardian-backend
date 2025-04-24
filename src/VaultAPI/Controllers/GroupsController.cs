@@ -1,8 +1,9 @@
-// src/VaultAPI/Controllers/GroupsController.cs
+// Ruta: src/VaultAPI/Controllers/GroupsController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
@@ -18,32 +19,54 @@ namespace VaultAPI.Controllers
             _context = context;
         }
 
+        // Obtener todos los grupos con sus empresas asociadas
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var groups = await _context.Groups
-                .Include(g => g.Companies)
+                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
                 .ToListAsync();
 
-            return Ok(groups);
+            // Si no hay grupos, se devuelve un mensaje indicando que no hay datos
+            if (groups == null || groups.Count == 0)
+            {
+                return Ok(new { message = "No hay grupos registrados." });
+            }
+
+            return Ok(groups);  // Devuelve la lista de grupos
         }
 
+        // Obtener un grupo por su ID
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var group = await _context.Groups
-                .Include(g => g.Companies)
+                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
                 .FirstOrDefaultAsync(g => g.Id == id);
 
             if (group == null)
-                return NotFound();
+                return NotFound("Grupo no encontrado.");
 
             return Ok(group);
         }
 
+        // Crear un nuevo grupo (solo accesible para administradores)
         [HttpPost]
-        public async Task<IActionResult> Create(CreateGroupDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateGroupDto dto)
         {
+            // Verificar si el usuario tiene el claim de "Admin"
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role != "Admin")
+            {
+                return Unauthorized("No tienes permisos para crear un grupo.");
+            }
+
+            if (dto == null || string.IsNullOrEmpty(dto.Name))
+            {
+                return BadRequest("Nombre del grupo no válido.");
+            }
+
             var group = new Group
             {
                 Name = dto.Name
@@ -55,12 +78,21 @@ namespace VaultAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = group.Id }, group);
         }
 
+        // Eliminar un grupo (solo accesible para administradores)
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // Verificar si el usuario tiene el claim de "Admin"
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role != "Admin")
+            {
+                return Unauthorized("No tienes permisos para eliminar un grupo.");
+            }
+
             var group = await _context.Groups.FindAsync(id);
             if (group == null)
-                return NotFound();
+                return NotFound("Grupo no encontrado.");
 
             _context.Groups.Remove(group);
             await _context.SaveChangesAsync();
