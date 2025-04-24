@@ -55,9 +55,10 @@ namespace VaultAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateGroupDto dto)
         {
-            // Verificar si el usuario tiene el claim de "Admin"
+            // Obtener el claim de "Role" directamente desde los claims del usuario
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
+            // Verificar que el usuario tenga el rol de "Admin"
             if (role != "Admin")
             {
                 return Unauthorized("No tienes permisos para crear un grupo.");
@@ -83,9 +84,10 @@ namespace VaultAPI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            // Verificar si el usuario tiene el claim de "Admin"
+            // Obtener el claim de "Role" directamente desde los claims del usuario
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
+            // Verificar que el usuario tenga el rol de "Admin"
             if (role != "Admin")
             {
                 return Unauthorized("No tienes permisos para eliminar un grupo.");
