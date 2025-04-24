@@ -1,4 +1,4 @@
-// Ruta: src/VaultAPI/Models/CreateGroupDto.cs
+// Ruta: src/VaultAPI/Models/Dto/CreateGroupDto.cs
 using System.ComponentModel.DataAnnotations;
 
 namespace VaultAPI.Models
