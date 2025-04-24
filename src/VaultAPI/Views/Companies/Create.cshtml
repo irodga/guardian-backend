@@ -47,7 +47,7 @@
         <form method="post" action="/companies/create">
             <div class="form-group">
                 <label for="companyName">Nombre de la Empresa</label>
-                <input type="text" id="companyName" name="Name" class="form-control" value="@Model.Name" required placeholder="Nombre de la empresa" />
+                <input type="text" id="companyName" name="Name" class="form-control" value="@Model?.Name" required placeholder="Nombre de la empresa" />
                 @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
                 {
                     <div class="error-message">

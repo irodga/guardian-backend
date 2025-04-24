@@ -44,8 +44,16 @@ namespace VaultAPI.Controllers
                 Text = g.Name
             }).ToList();
 
+            // Verificamos que la lista de grupos se asignó correctamente
+            _logger.LogInformation("Asignando {GroupCount} grupos a ViewBag.Groups", groupItems.Count);
+            
             ViewBag.Groups = groupItems;  // Pasar la lista de SelectListItem a la vista
-            return View();
+            
+            // Creamos un modelo vacío (si es necesario)
+            var model = new CreateCompanyDto();
+            _logger.LogInformation("Pasando un modelo CreateCompanyDto vacío a la vista.");
+            
+            return View(model);  // Asegúrate de pasar un modelo a la vista
         }
 
         // Crear una nueva empresa (POST)

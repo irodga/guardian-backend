@@ -1,4 +1,4 @@
-// Ruta: src/VaultAPI/Models/Dto/CompanyDto.cs
+// Ruta: src/VaultAPI/Models/Dto/CreateCompanyDto.cs
 namespace VaultAPI.Models.Dto
 {
     public class CreateCompanyDto
