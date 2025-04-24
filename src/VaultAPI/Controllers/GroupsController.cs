@@ -1,7 +1,7 @@
 // Ruta: src/VaultAPI/Controllers/GroupsController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;  // Asegúrate de que esta importación esté presente
+using VaultAPI.Models.Dto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -11,7 +11,7 @@ namespace VaultAPI.Controllers
     [Authorize]
     [ApiController]
     [Route("groups")]
-    public class GroupsController : Controller  // Cambiado de ControllerBase a Controller
+    public class GroupsController : Controller  // Asegúrate de que heredes de Controller, no de ControllerBase
     {
         private readonly GuardianDbContext _context;
 
@@ -29,7 +29,7 @@ namespace VaultAPI.Controllers
                 .ToListAsync();
 
             // Si no hay grupos, se pasa una lista vacía a la vista
-            return View(groups);  // Siempre pasa los datos (o lista vacía) a la vista
+            return View("Index", groups);  // Siempre pasa los datos (o lista vacía) a la vista
         }
 
         // Obtener un grupo por su ID
@@ -43,7 +43,7 @@ namespace VaultAPI.Controllers
             if (group == null)
                 return NotFound("Grupo no encontrado.");
 
-            return View("Index", groups);  // Pasa el grupo a la vista
+            return View(group);  // Pasa el grupo a la vista
         }
 
         // Crear un nuevo grupo (solo accesible para administradores)
@@ -70,8 +70,8 @@ namespace VaultAPI.Controllers
             _context.Groups.Add(group);
             await _context.SaveChangesAsync();
 
-            // Redirige a la acción GetById después de crear el grupo
-            return RedirectToAction(nameof(GetById), new { id = group.Id });
+            // Redirige a la acción GetAll después de crear el grupo
+            return RedirectToAction(nameof(GetAll));  // Redirigir a la acción GetAll
         }
 
         // Eliminar un grupo (solo accesible para administradores)
