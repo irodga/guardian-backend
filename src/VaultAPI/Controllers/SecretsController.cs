@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
+    [Authorize]
     [ApiController]
     [Route("secrets")]
     public class SecretsController : Controller
@@ -25,14 +25,13 @@ namespace VaultAPI.Controllers
         }
 
         // GET: /Secrets/Create
-        [HttpGet("create")]  // Define una ruta explícita para "Create"
+        [HttpGet("create")]
         public IActionResult Create()
         {
             // Cargar las empresas y grupos de empresas desde la base de datos
             var companies = _context.Companies.Include(c => c.Group).ToList();  // Asegúrate de incluir los grupos
             var companyGroups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
 
-            // Crear un modelo para pasarlo a la vista
             var model = new CreateSecretViewModel
             {
                 Companies = companies,
@@ -44,7 +43,7 @@ namespace VaultAPI.Controllers
 
         // POST: /Secrets/Create
         [HttpPost("create")]
-        public async Task<IActionResult> Create(VaultAPI.Models.Dto.CreateSecretDto dto)
+        public async Task<IActionResult> Create([FromForm] VaultAPI.Models.Dto.CreateSecretDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -55,6 +54,7 @@ namespace VaultAPI.Controllers
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
+            // Lógica para guardar el secreto en Vault
             if (dto.Type == "password")
             {
                 vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Value!);
