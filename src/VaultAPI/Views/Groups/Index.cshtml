@@ -5,46 +5,100 @@
     ViewData["Title"] = "Listado de Grupos";
 }
 
-<h1>@ViewData["Title"]</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- Agregar Bootstrap para el estilo -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
 
-@if (Model == null || !Model.Any())
-{
-    <div>No hay grupos registrados. Puedes agregar un grupo utilizando el formulario a continuación.</div>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nombre del Grupo</th>
-                <th>Empresas Asociadas</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var group in Model)
-            {
-                <tr>
-                    <td>@group.Name</td>
-                    <td>
-                        @if (group.Companies.Any())
-                        {
-                            foreach (var company in group.Companies)
-                            {
-                                <div>@company.Name</div>
-                            }
-                        }
-                        else
-                        {
-                            <div>No hay empresas asociadas</div>
-                        }
-                    </td>
-                    <td>
-                        <!-- Aquí puedes agregar enlaces o botones para editar/eliminar -->
-                        <a href="#">Editar</a> | <a href="#">Eliminar</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        .container {
+            margin-top: 50px;
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+        .message {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center text-primary">@ViewData["Title"]</h1>
+
+    <!-- Si no hay grupos, muestra un mensaje -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="message">
+            No hay grupos registrados. Puedes agregar un grupo utilizando el formulario a continuación.
+        </div>
+    }
+    else
+    {
+        <!-- Tabla para listar los grupos -->
+        <div class="table-container">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre del Grupo</th>
+                        <th>Empresas Asociadas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var group in Model)
+                    {
+                        <tr>
+                            <td>@group.Name</td>
+                            <td>
+                                @if (group.Companies.Any())
+                                {
+                                    @foreach (var company in group.Companies)
+                                    {
+                                        <div>@company.Name</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>No hay empresas asociadas</div>
+                                }
+                            </td>
+                            <td>
+                                <a href="#" class="btn btn-warning btn-sm">Editar</a> 
+                                <a href="#" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Agregar el enlace para crear un nuevo grupo -->
+<div class="text-center mt-4">
+    <a href="/groups/create" class="btn btn-success">Crear Nuevo Grupo</a>
+</div>
+
+<!-- Scripts de Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -2,53 +2,65 @@
 @model VaultAPI.Models.Dto.CreateGroupDto
 
 @{
-    ViewData["Title"] = "Crear Grupo";
+    ViewData["Title"] = "Crear Nuevo Grupo";
 }
 
-<h1>@ViewData["Title"]</h1>
-
-<form id="createGroupForm">
-    <div class="form-group">
-        <label for="Name">Nombre del Grupo</label>
-        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
-        @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
-        {
-            <div class="text-danger">
-                @foreach (var error in ViewData.ModelState["Name"].Errors)
-                {
-                    <p>@error.ErrorMessage</p>
-                }
-            </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- Agregar Bootstrap para el estilo -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
         }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group input {
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center text-primary">@ViewData["Title"]</h1>
+
+        <form method="post" action="/groups/create">
+            <div class="form-group">
+                <label for="groupName">Nombre del Grupo</label>
+                <input type="text" id="groupName" name="groupName" class="form-control" required placeholder="Nombre del grupo" />
+            </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Crear Grupo</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="/groups" class="btn btn-secondary">Volver al Listado de Grupos</a>
+        </div>
     </div>
+</div>
 
-    <button type="submit" class="btn btn-primary">Crear Grupo</button>
-</form>
+<!-- Scripts de Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-@section Scripts {
-    <script>
-        $(document).ready(function() {
-            $('#createGroupForm').on('submit', function(e) {
-                e.preventDefault();
-
-                var groupData = {
-                    Name: $('#Name').val()
-                };
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/groups', // Asegúrate de que esta URL coincida con la ruta de tu controlador
-                    data: JSON.stringify(groupData),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        alert("¡Grupo creado con éxito!");
-                        window.location.href = '/groups';  // Redirige al listado de grupos
-                    },
-                    error: function(error) {
-                        alert("Hubo un error al crear el grupo.");
-                    }
-                });
-            });
-        });
-    </script>
-}
+</body>
+</html>
