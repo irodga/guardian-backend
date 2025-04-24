@@ -31,53 +31,56 @@ namespace VaultAPI.Controllers
             return View("Index", groups);  // Siempre pasa los datos (o lista vacía) a la vista
         }
 
-        // Crear un nuevo grupo (solo accesible para administradores)
+        // Obtener un grupo por su ID
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var group = await _context.Groups
+                .Include(g => g.Companies)  // Incluye las empresas asociadas al grupo
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (group == null)
+                return NotFound("Grupo no encontrado.");
+
+            return View(group);  // Pasa el grupo a la vista
+        }
+
+        // Mostrar el formulario para crear un nuevo grupo (GET)
         [HttpGet("create")]
         public IActionResult Create()
         {
             return View();  // Devuelve la vista de creación de grupo
         }
 
-       [HttpPost("create")]
-public async Task<IActionResult> Create([FromForm] CreateGroupDto dto)
-{
-    // Verificar si la validación no pasó
-    if (!ModelState.IsValid)
-    {
-        return View(dto);  // Retorna la vista con los errores de validación
-    }
+        // Crear un nuevo grupo (POST)
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] CreateGroupDto dto)
+        {
+            // Verificar si la validación no pasó
+            if (!ModelState.IsValid)
+            {
+                return View(dto);  // Retorna la vista con los errores de validación
+            }
 
-    var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-    if (role != "Admin")
-    {
-        return Unauthorized("No tienes permisos para crear un grupo.");
-    }
+            if (role != "Admin")
+            {
+                return Unauthorized("No tienes permisos para crear un grupo.");
+            }
 
-    // No es necesario verificar dto.Name, ya que el modelo ya tiene la validación [Required]
-    
-    var group = new Group
-    {
-        Name = dto.Name
-    };
+            var group = new Group
+            {
+                Name = dto.Name
+            };
 
-    _context.Groups.Add(group);
-    await _context.SaveChangesAsync();
+            _context.Groups.Add(group);
+            await _context.SaveChangesAsync();
 
-    // Redirige a la acción GetAll después de crear el grupo
-    return RedirectToAction(nameof(GetAll));  // Redirigir a la acción GetAll
-}
-    var group = new Group
-    {
-        Name = dto.Name
-    };
+            // Redirige a la acción GetAll después de crear el grupo
+            return RedirectToAction(nameof(GetAll));  // Redirigir a la acción GetAll
+        }
 
-    _context.Groups.Add(group);
-    await _context.SaveChangesAsync();
-
-    // Redirige a la acción GetAll después de crear el grupo
-    return RedirectToAction(nameof(GetAll));  // Redirigir a la acción GetAll
-}
         // Eliminar un grupo (solo accesible para administradores)
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
