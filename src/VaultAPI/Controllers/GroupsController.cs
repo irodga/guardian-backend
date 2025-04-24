@@ -43,7 +43,7 @@ namespace VaultAPI.Controllers
             if (group == null)
                 return NotFound("Grupo no encontrado.");
 
-            return View(group);  // Pasa el grupo a la vista
+            return View("Index", groups);  // Pasa el grupo a la vista
         }
 
         // Crear un nuevo grupo (solo accesible para administradores)
