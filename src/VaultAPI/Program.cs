@@ -1,4 +1,4 @@
-// Program.cs 
+// Ruta: Program.cs
 using VaultAPI;
 using Microsoft.EntityFrameworkCore;
 using Amazon.SecretsManager;
@@ -37,7 +37,11 @@ builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<VaultKVService>(); 
+
+// Registrar servicios de Vault
+builder.Services.Configure<VaultConfig>(builder.Configuration.GetSection("Vault")); // Cargar configuración desde appsettings
+builder.Services.AddScoped<VaultIamAuthService>();  // Registrar VaultIamAuthService
+builder.Services.AddScoped<VaultKVService>();  // Registrar VaultKVService
 
 // Configuración de autenticación y autorización
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

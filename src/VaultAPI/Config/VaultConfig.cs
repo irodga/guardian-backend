@@ -1,9 +1,5 @@
-// Archivo: VaultAPI/Config/VaultConfig.cs
-public class VaultConfig
+// Archivo: VaultAPI/Config/VaultConfig.cspublic class VaultConfig
 {
-    public string VaultAddress { get; set; }
-    public string Role { get; set; }
-    public string Region { get; set; }
-    public string Endpoint { get; set; }
-    public string Service { get; set; }
+    public string VaultAddress { get; set; } = string.Empty;
+    public string VaultToken { get; set; } = string.Empty;  // Si decides almacenar el token aquí
 }
