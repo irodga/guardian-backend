@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace VaultAPI.Models.Dto
 {
-    public class LegacyCreateSecretDto  
+    public class CreateSecretDto  
     {
         [Required]
         public string Name { get; set; } = string.Empty;
