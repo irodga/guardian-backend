@@ -26,6 +26,11 @@ namespace VaultAPI.Controllers
         public IActionResult Create()
         {
             var groups = _context.Groups.ToList();  // Obtener todos los grupos
+            if (groups == null || !groups.Any())
+            {
+                return View("Error");  // Redirigir a una vista de error si no hay grupos disponibles
+            }
+
             ViewBag.Groups = new SelectList(groups, "Id", "Name");  // Pasar los grupos a la vista
             return View();
         }
@@ -68,15 +73,8 @@ namespace VaultAPI.Controllers
                 .Include(c => c.Group)  // Incluye el grupo asociado
                 .ToListAsync();
 
-            // Convertir las empresas al DTO (si es necesario)
-            var companyDtos = companies.Select(c => new CreateCompanyDto
-            {
-                Name = c.Name,
-                GroupId = c.GroupId,
-                GroupName = c.Group.Name  // Obtener el nombre del grupo asociado
-            }).ToList();
-
-            return View("Index", companyDtos);  // Pasa el DTO a la vista
+            // Pasar las empresas directamente a la vista sin usar CompanyDtos
+            return View("Index", companies);  // Pasa las empresas directamente a la vista
         }
     }
 }

@@ -5,48 +5,100 @@
     ViewData["Title"] = "Crear Nueva Empresa";
 }
 
-<h1>@ViewData["Title"]</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Arial', sans-serif;
+        }
 
-<form method="post" action="/companies/create">
-    <div class="form-group">
-        <label for="companyName">Nombre de la Empresa</label>
-        <input type="text" id="companyName" name="Name" class="form-control" value="@Model.Name" required placeholder="Nombre de la empresa" />
-        @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
-        {
-            <div class="error-message">
-                @foreach (var error in ViewData.ModelState["Name"].Errors)
+        .container {
+            margin-top: 50px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group input, .form-group select {
+            max-width: 300px;
+        }
+
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center text-primary">@ViewData["Title"]</h1>
+
+        <form method="post" action="/companies/create">
+            <div class="form-group">
+                <label for="companyName">Nombre de la Empresa</label>
+                <input type="text" id="companyName" name="Name" class="form-control" value="@Model.Name" required placeholder="Nombre de la empresa" />
+                @if (ViewData.ModelState["Name"]?.Errors.Count > 0)
                 {
-                    <p>@error.ErrorMessage</p>
+                    <div class="error-message">
+                        @foreach (var error in ViewData.ModelState["Name"].Errors)
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
                 }
             </div>
-        }
-    </div>
 
-    <div class="form-group">
-        <label for="groupId">Seleccionar Grupo</label>
-        <select id="groupId" name="GroupId" class="form-control" required>
-            <option value="">Seleccione un grupo</option>
-            @foreach (var group in ViewBag.Groups as SelectList)
-            {
-                <option value="@group.Value">@group.Text</option>
-            }
-        </select>
-        @if (ViewData.ModelState["GroupId"]?.Errors.Count > 0)
-        {
-            <div class="error-message">
-                @foreach (var error in ViewData.ModelState["GroupId"].Errors)
+            <div class="form-group">
+                <label for="groupId">Seleccionar Grupo</label>
+                <select id="groupId" name="GroupId" class="form-control" required>
+                    <option value="">Seleccione un grupo</option>
+                    @if (ViewBag.Groups != null)  <!-- Verificar que ViewBag.Groups no es nulo -->
+                    {
+                        foreach (var group in ViewBag.Groups as SelectList)
+                        {
+                            <option value="@group.Value">@group.Text</option>
+                        }
+                    }
+                    else
+                    {
+                        <option disabled>No hay grupos disponibles</option>
+                    }
+                </select>
+                @if (ViewData.ModelState["GroupId"]?.Errors.Count > 0)
                 {
-                    <p>@error.ErrorMessage</p>
+                    <div class="error-message">
+                        @foreach (var error in ViewData.ModelState["GroupId"].Errors)
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
                 }
             </div>
-        }
-    </div>
 
-    <div class="form-group text-center">
-        <button type="submit" class="btn btn-primary">Crear Empresa</button>
-    </div>
-</form>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Crear Empresa</button>
+            </div>
+        </form>
 
-<div class="text-center mt-4">
-    <a href="/companies" class="btn btn-secondary">Volver al Listado de Empresas</a>
+        <div class="text-center mt-4">
+            <a href="/companies" class="btn btn-secondary">Volver al Listado de Empresas</a>
+        </div>
+    </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
