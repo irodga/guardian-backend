@@ -28,19 +28,9 @@ namespace VaultAPI.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
-            // Cargar las empresas y grupos de empresas desde la base de datos
-            var companies = _context.Companies.Include(c => c.Group).ToList();  // Asegúrate de incluir los grupos
+            // Cargar las empresas desde la base de datos
+            var companies = _context.Companies.ToList();
             var groups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
-
-            if (companies == null || !companies.Any()) {
-                ModelState.AddModelError("", "No hay empresas disponibles.");
-                return View(); // Retorna la vista si no hay empresas
-            }
-
-            if (groups == null || !groups.Any()) {
-                ModelState.AddModelError("", "No hay grupos de empresas disponibles.");
-                return View(); // Retorna la vista si no hay grupos de empresas
-            }
 
             // Crear un modelo para pasarlo a la vista
             var model = new CreateSecretViewModel
@@ -49,12 +39,12 @@ namespace VaultAPI.Controllers
                 Groups = groups
             };
 
-            return View(model);
+            return View(model); // Pasamos CreateSecretViewModel a la vista
         }
 
         // POST: /Secrets/Create
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] VaultAPI.Models.Dto.CreateSecretDto dto)
+        public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             if (!ModelState.IsValid)
             {
