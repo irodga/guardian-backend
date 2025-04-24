@@ -1,10 +1,10 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;  // Asegúrate de importar el namespace correcto para CreateSecretDto
+using VaultAPI.Models.Dto;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;  // Asegúrate de usar [Authorize]
+using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using System.Security.Claims;
 
@@ -24,62 +24,26 @@ namespace VaultAPI.Controllers
             _vaultKvService = vaultKvService;
         }
 
-        // GET: /Secrets/Index
-        [HttpGet("index")]  // Define la ruta explícita para "Index"
-        public async Task<IActionResult> Index()
-        {
-            // Verificar que el usuario esté autenticado
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();  // Devuelve 401 si el usuario no está autenticado
-            }
-
-            // Obtener el userId desde los claims
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-            {
-                return Unauthorized();  // Si no se encuentra el userId en los claims, devolver 401
-            }
-
-            // Obtener el rol del usuario desde la base de datos
-            var user = await _context.Users
-                .Where(u => u.Id == userId)
-                .FirstOrDefaultAsync();
-
-            if (user == null)
-            {
-                return Unauthorized();  // Si no se encuentra el usuario, devolver 401
-            }
-
-            // Si el usuario es Admin, puede ver todos los secretos
-            if (user.IsAdmin)
-            {
-                var allSecrets = await _context.Secrets
-                    .Include(s => s.Company)
-                    .ToListAsync();
-
-                return View(allSecrets);  // Devuelve todos los secretos para los usuarios Admin
-            }
-
-            // Si el usuario no es Admin, filtrar los secretos a los que tiene acceso
-            var secrets = await _context.Secrets
-                .Where(s => _context.SecretAccesses
-                    .Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
-                .Include(s => s.Company)
-                .ToListAsync();
-
-            return View(secrets);  // Devuelve la vista con los secretos accesibles para el usuario
-        }
-
         // GET: /Secrets/Create
         [HttpGet("create")]  // Define una ruta explícita para "Create"
         public IActionResult Create()
         {
-            return View();
+            // Cargar las empresas y grupos de empresas desde la base de datos
+            var companies = _context.Companies.Include(c => c.Group).ToList();  // Asegúrate de incluir los grupos
+            var companyGroups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
+
+            // Crear un modelo para pasarlo a la vista
+            var model = new CreateSecretViewModel
+            {
+                Companies = companies,
+                CompanyGroups = companyGroups
+            };
+
+            return View(model);
         }
 
         // POST: /Secrets/Create
-        [HttpPost("create")]  // Define una ruta explícita para el método POST de "Create"
+        [HttpPost("create")]
         public async Task<IActionResult> Create(VaultAPI.Models.Dto.CreateSecretDto dto)
         {
             if (!ModelState.IsValid)
@@ -145,32 +109,6 @@ namespace VaultAPI.Controllers
 
             TempData["LoginMessage"] = "¡Secreto creado correctamente!";
             return RedirectToAction("Index", "Secrets");
-        }
-
-        // GET: /Secrets/View/{id}
-        [HttpGet("view/{id:int}")]  // Define una ruta explícita para "View"
-        public async Task<IActionResult> View(int id)
-        {
-            var secret = await _context.Secrets.FindAsync(id);
-            if (secret == null)
-                return NotFound();
-
-            var secretValue = await _vaultKvService.ReadSecretAsync(secret.VaultPath);
-            return View(secretValue);
-        }
-
-        // POST: /Secrets/Delete/{id}
-        [HttpDelete("delete/{id:int}")]  // Define una ruta explícita para "Delete"
-        public async Task<IActionResult> Delete(int id)
-        {
-            var secret = await _context.Secrets.FindAsync(id);
-            if (secret == null)
-                return NotFound();
-
-            _context.Secrets.Remove(secret);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }
