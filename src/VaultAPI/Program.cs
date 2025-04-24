@@ -50,6 +50,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddDbContext<GuardianDbContext>(options =>
     options.UseMySql(connStr, ServerVersion.AutoDetect(connStr)));
 
+// Registrar la configuración de Vault
+builder.Services.Configure<VaultConfig>(builder.Configuration.GetSection("Vault"));
+
+// Registro del servicio VaultKVService
+builder.Services.AddScoped<VaultKVService>();
+
 var app = builder.Build();
 
 // Configurar el middleware
@@ -141,3 +147,4 @@ static async Task TestVaultLogin()
         Console.WriteLine("Falló el login IAM con Vault.");
     }
 }
+
