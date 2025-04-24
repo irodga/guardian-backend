@@ -1,10 +1,11 @@
 // Ruta: src/VaultAPI/Controllers/CompaniesController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;
+using VaultAPI.Models.Dto;  // Asegúrate de usar CreateCompanyDto
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace VaultAPI.Controllers
 {
@@ -59,7 +60,7 @@ namespace VaultAPI.Controllers
             return RedirectToAction("Index", "Companies");  // Redirigir a la lista de empresas
         }
 
-        // Obtener todas las empresas
+        // Obtener todas las empresas (GET)
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -67,10 +68,9 @@ namespace VaultAPI.Controllers
                 .Include(c => c.Group)  // Incluye el grupo asociado
                 .ToListAsync();
 
-            // Convertir las empresas al DTO
-            var companyDtos = companies.Select(c => new CompanyDto
+            // Convertir las empresas al DTO (si es necesario)
+            var companyDtos = companies.Select(c => new CreateCompanyDto
             {
-                Id = c.Id,
                 Name = c.Name,
                 GroupId = c.GroupId,
                 GroupName = c.Group.Name  // Obtener el nombre del grupo asociado
