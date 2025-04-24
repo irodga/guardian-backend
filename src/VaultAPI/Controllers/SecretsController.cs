@@ -6,6 +6,7 @@ using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;  // Asegúrate de usar [Authorize]
 using System.IO;
+using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
