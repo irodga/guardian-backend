@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]
+    [Authorize]  // Asegura que solo los usuarios autenticados accedan a este controlador
     [ApiController]
     [Route("secrets")]
     public class SecretsController : Controller
@@ -30,12 +30,13 @@ namespace VaultAPI.Controllers
         {
             // Cargar las empresas y grupos de empresas desde la base de datos
             var companies = _context.Companies.Include(c => c.Group).ToList();  // Asegúrate de incluir los grupos
-            var companyGroups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
+            var groups = _context.Groups.ToList();  // Si necesitas los grupos de empresas
 
+            // Crear un modelo para pasarlo a la vista
             var model = new CreateSecretViewModel
             {
                 Companies = companies,
-                CompanyGroups = companyGroups
+                Groups = groups
             };
 
             return View(model);
@@ -54,7 +55,6 @@ namespace VaultAPI.Controllers
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
-            // Lógica para guardar el secreto en Vault
             if (dto.Type == "password")
             {
                 vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Value!);
