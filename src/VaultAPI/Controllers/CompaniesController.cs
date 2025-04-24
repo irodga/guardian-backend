@@ -29,8 +29,6 @@ namespace VaultAPI.Controllers
         public IActionResult Create()
         {
             var groups = _context.Groups.ToList();  // Obtener todos los grupos
-
-            // Log para verificar si estamos obteniendo grupos correctamente
             _logger.LogInformation("Obteniendo grupos de la base de datos. Total de grupos encontrados: {GroupCount}", groups.Count);
 
             if (groups == null || !groups.Any())
@@ -39,7 +37,14 @@ namespace VaultAPI.Controllers
                 return View("Error");  // Redirigir a una vista de error si no hay grupos disponibles
             }
 
-            ViewBag.Groups = new SelectList(groups, "Id", "Name");  // Pasar los grupos a la vista
+            // Creamos la lista de SelectListItem en lugar de SelectList
+            var groupItems = groups.Select(g => new SelectListItem
+            {
+                Value = g.Id.ToString(),
+                Text = g.Name
+            }).ToList();
+
+            ViewBag.Groups = groupItems;  // Pasar la lista de SelectListItem a la vista
             return View();
         }
 
@@ -57,7 +62,13 @@ namespace VaultAPI.Controllers
 
                 // Si hay errores en el modelo, retornar a la vista con los errores
                 var groups = _context.Groups.ToList();
-                ViewBag.Groups = new SelectList(groups, "Id", "Name");
+                var groupItems = groups.Select(g => new SelectListItem
+                {
+                    Value = g.Id.ToString(),
+                    Text = g.Name
+                }).ToList();
+
+                ViewBag.Groups = groupItems;
                 return View(dto);
             }
 
