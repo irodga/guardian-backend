@@ -8,4 +8,4 @@ namespace VaultAPI.Models.Dto
         public string Name { get; set; } = string.Empty;  // Sin validaciones
     }
 }
-}
+
