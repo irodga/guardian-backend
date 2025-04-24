@@ -63,7 +63,9 @@
                 <label for="groupId">Seleccionar Grupo</label>
                 <select id="groupId" name="GroupId" class="form-control" required>
                     <option value="">Seleccione un grupo</option>
-                    @if (ViewBag.Groups != null)  <!-- Verificar que ViewBag.Groups no es nulo -->
+
+                    <!-- Verificar que ViewBag.Groups no sea nulo y recorrerlo -->
+                    @if (ViewBag.Groups != null)
                     {
                         foreach (var group in ViewBag.Groups as SelectList)
                         {
