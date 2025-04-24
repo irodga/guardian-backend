@@ -1,6 +1,6 @@
-// Ruta: src/VaultAPI/Controllers/SecretsController.cs
+// src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models.Dto;  // Importa el namespace correcto para 'CreateSecretDto'
+using VaultAPI.Models.Dto;  // Usamos el DTO correcto para CreateSecretDto
 using VaultAPI.Models;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +10,9 @@ using System.Security.Claims;
 
 namespace VaultAPI.Controllers
 {
-    [Authorize]
+    [Authorize]  // Solo usuarios autenticados pueden acceder
     [ApiController]
-    [Route("secrets")]
+    [Route("secrets")]  // Ruta base para el controlador
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
@@ -33,13 +33,13 @@ namespace VaultAPI.Controllers
             var groups = _context.Groups.ToList();
 
             // Crear el modelo para pasarlo a la vista
-            var model = new CreateSecretDto
+            var model = new CreateSecretViewModel
             {
                 Companies = companies,
                 Groups = groups
             };
 
-            return View(model);  // Pasamos CreateSecretDto a la vista
+            return View(model);  // Pasamos CreateSecretViewModel a la vista
         }
 
         // POST: /Secrets/Create
@@ -48,7 +48,7 @@ namespace VaultAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(dto);
+                return View(dto);  // Si no es válido, regresamos el formulario con los errores
             }
 
             // Generar VaultPath
