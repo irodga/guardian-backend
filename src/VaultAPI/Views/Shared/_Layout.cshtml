@@ -9,119 +9,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Guardian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"> <!-- Bootstrap Icons -->
 </head>
-
 <style>
-/* Aseguramos que el menú ocupe toda la altura disponible */
+/* Aquí va tu estilo para el menú lateral y demás */
 .navbar-nav {
     height: 100vh; /* 100% del alto de la ventana */
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Alineamos el contenido hacia arriba */
+    justify-content: flex-start;
     padding-top: 20px;
     padding-bottom: 20px;
 }
 
-/* Mejoramos la presentación de los enlaces del menú */
 .navbar {
-    border-right: 2px solid #ddd; /* Borde a la derecha */
-    background-color: #f8f9fa;  /* Color de fondo suave */
+    border-right: 2px solid #ddd;
+    background-color: #f8f9fa;
 }
 
-/* Aseguramos que los enlaces del menú se vean bien */
 .nav-item {
-    margin-bottom: 20px;  /* Agregar más espacio entre los elementos del menú */
+    margin-bottom: 15px;
 }
 
-/* Estilo del enlace activo */
 .nav-link.active {
-    background-color: #007bff;  /* Fondo azul para el enlace activo */
-    color: white;  /* Texto blanco */
+    background-color: #007bff;
+    color: white;
     border-radius: 4px;
 }
 
-/* Estilo para los enlaces del menú */
 .nav-link {
-    color: #333;  /* Color de texto de los enlaces */
-    font-weight: 500; /* Hacemos que el texto sea más legible */
-    text-transform: uppercase; /* Capitalizamos los enlaces */
-    padding: 12px;
+    color: #333;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 10px;
     border-radius: 4px;
-    transition: background-color 0.3s ease;  /* Transición suave para el hover */
+    transition: background-color 0.3s ease;
 }
 
 .nav-link:hover {
-    background-color: #f1f1f1; /* Efecto hover en los enlaces */
+    background-color: #f1f1f1;
 }
 
-/* Ajustes de estilo para el contenedor del dashboard */
 .container-fluid {
-    margin-top: 20px; /* Espaciado superior para el contenido */
+    margin-top: 20px;
 }
 
-/* Aseguramos que el contenido del dashboard tenga un buen espaciado */
 .col-md-9 {
-    padding-left: 40px;
-    padding-right: 40px;
-}
-
-/* Estilo para mejorar la visibilidad del contenido */
-.sidebar {
-    position: sticky; 
-    top: 0;
-    height: 100%; /* Asegura que el menú ocupe toda la pantalla */
-    overflow-y: auto; /* Agrega desplazamiento si el contenido es largo */
-}
-
-/* Aseguramos que los íconos del menú tengan espacio y estén alineados */
-.nav-link i {
-    margin-right: 10px;  /* Espacio entre el icono y el texto */
-}
-
-.main-content {
-    padding: 20px;  /* Agregar espacio alrededor del contenido */
+    padding-left: 30px;
+    padding-right: 30px;
 }
 </style>
-
 <body>
+
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar (Menú de navegación izquierdo) -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                <div class="position-sticky" style="height: 100vh; overflow-y: auto;">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="@Url.Action("Index", "Dashboard")">
-                                <i class="bi bi-house-door"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Secrets")">
-                                <i class="bi bi-lock"></i> Secretos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Create", "Secrets")">
-                                <i class="bi bi-plus-square"></i> Crear Secreto
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-person"></i> Mi Perfil
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <!-- Menú de navegación izquierdo (en Layout) -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar" style="height: 100vh; padding-top: 20px;">
+                <nav class="navbar navbar-light">
+                    <div class="navbar-nav flex-column">
+                        <a href="@Url.Action("Index", "Dashboard")" class="nav-item nav-link active">Dashboard</a>
+                        <a href="@Url.Action("Index", "Secrets")" class="nav-item nav-link">Secretos</a>
+                        <a href="@Url.Action("Create", "Secrets")" class="nav-item nav-link">Agregar Secreto</a>
+                        <a href="@Url.Action("Index", "AccessLogs")" class="nav-item nav-link">Accesos Recientes</a>
+                        <a href="@Url.Action("Index", "Companies")" class="nav-item nav-link">Empresas</a>
+                        <a href="@Url.Action("Index", "Groups")" class="nav-item nav-link">Grupos</a>
+                        <a href="@Url.Action("Index", "Users")" class="nav-item nav-link">Usuarios</a>
+                    </div>
+                </nav>
+            </div>
 
-            <!-- Main content area -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-4 main-content">
+            <!-- Contenido principal de la página (Aquí se carga lo que corresponde en cada vista, como el Dashboard) -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-4">
                 @RenderBody()  <!-- Aquí se renderiza el contenido de cada vista -->
             </main>
         </div>
