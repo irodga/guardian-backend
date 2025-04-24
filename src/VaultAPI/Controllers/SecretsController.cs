@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.IO;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging;  // Asegúrate de tener este namespace para usar ILogger
+using Microsoft.Extensions.Logging;
 
 namespace VaultAPI.Controllers
 {
@@ -18,13 +18,13 @@ namespace VaultAPI.Controllers
     {
         private readonly GuardianDbContext _context;
         private readonly VaultKVService _vaultKvService;
-        private readonly ILogger<SecretsController> _logger;  // Inyectar el logger
+        private readonly ILogger<SecretsController> _logger;
 
         public SecretsController(GuardianDbContext context, VaultKVService vaultKvService, ILogger<SecretsController> logger)
         {
             _context = context;
             _vaultKvService = vaultKvService;
-            _logger = logger;  // Asignar el logger
+            _logger = logger;
         }
 
         // Acción para manejar la ruta raíz /Secrets y redirigir a /Secrets/Index
@@ -42,7 +42,7 @@ namespace VaultAPI.Controllers
             _logger.LogInformation("Obteniendo todos los secretos desde la base de datos.");
             var secrets = _context.Secrets.ToList();
             _logger.LogInformation("Cantidad de secretos obtenidos: {SecretCount}", secrets.Count);
-            return View(secrets);  // Aquí se pasa la lista de secretos a la vista
+            return View(secrets);
         }
 
         // GET: /Secrets/Create
@@ -53,7 +53,6 @@ namespace VaultAPI.Controllers
 
             // Cargar las empresas desde la base de datos (sin los grupos)
             var companies = _context.Companies.ToList();
-
             _logger.LogInformation("Empresas cargadas: {CompanyCount}", companies.Count);
 
             // Crear el modelo para pasarlo a la vista
@@ -63,7 +62,7 @@ namespace VaultAPI.Controllers
             };
 
             _logger.LogInformation("Modelo de creación de secreto preparado para la vista.");
-            return View(model);  // Pasamos CreateSecretDto a la vista
+            return View(model);
         }
 
         // POST: /Secrets/Create
@@ -71,21 +70,14 @@ namespace VaultAPI.Controllers
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             _logger.LogInformation("Formulario recibido para crear secreto. Datos recibidos:");
-
-            // Log de los datos recibidos
             _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, Value: {Value}",
                 dto.Name, dto.Type, dto.CompanyId, dto.Value);
 
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("El modelo no es válido. Errores: {Errors}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return View(dto);
-            }
-
+            // Saltar validaciones del modelo
             // Verificar que CompanyId no esté vacío (0)
             if (dto.CompanyId == 0)
             {
-                _logger.LogError("CompanyId no ha sido seleccionado o es inválido.");
+                _logger.LogError("El CompanyId no ha sido seleccionado o es inválido.");
                 ModelState.AddModelError("CompanyId", "Debe seleccionar una empresa.");
                 return View(dto);
             }
@@ -94,7 +86,6 @@ namespace VaultAPI.Controllers
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
 
-            // Log de la operación de tipo de secreto
             if (dto.Type == "password")
             {
                 _logger.LogInformation("Creando secreto de tipo 'password'.");
@@ -148,7 +139,7 @@ namespace VaultAPI.Controllers
             _context.SecretAccesses.Add(secretAccess);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Secreto creado correctamente. Enviando mensaje de éxito.");
+            _logger.LogInformation("Secreto creado correctamente.");
 
             TempData["LoginMessage"] = "¡Secreto creado correctamente!";
             return RedirectToAction("Index", "Secrets");
