@@ -81,7 +81,7 @@ namespace VaultAPI.Controllers
                 GroupName = c.Group.Name  // Obtener el nombre del grupo asociado
             }).ToList();
 
-            return View("Index", "CreateCompanyDto");  // Pasa los DTOs a la vista
+            return View("Index", companyDtos);  // Pasa los DTOs a la vista
         }
     }
 }
