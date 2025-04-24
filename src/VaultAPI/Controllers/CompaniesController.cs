@@ -1,7 +1,7 @@
 // Ruta: src/VaultAPI/Controllers/CompaniesController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models;
-using VaultAPI.Models.Dto;  // Asegúrate de usar CreateCompanyDto
+using VaultAPI.Models.Dto;  
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
@@ -73,8 +73,15 @@ namespace VaultAPI.Controllers
                 .Include(c => c.Group)  // Incluye el grupo asociado
                 .ToListAsync();
 
-            // Pasar las empresas directamente a la vista sin usar CompanyDtos
-            return View("Index", companies);  // Pasa las empresas directamente a la vista
+            // Convertir las empresas a CreateCompanyDto antes de pasarlas a la vista
+            var companyDtos = companies.Select(c => new CreateCompanyDto
+            {
+                Name = c.Name,
+                GroupId = c.GroupId,
+                GroupName = c.Group.Name  // Obtener el nombre del grupo asociado
+            }).ToList();
+
+            return View("Index", "CreateCompanyDto");  // Pasa los DTOs a la vista
         }
     }
 }
