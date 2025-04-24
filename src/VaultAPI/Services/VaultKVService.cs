@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;  // Para IOptions
 
 namespace VaultAPI.Services
 {
@@ -13,7 +13,7 @@ namespace VaultAPI.Services
         private readonly string _vaultAddress;
         private readonly VaultIamAuthService _vaultIamAuthService;
 
-        // Constructor modificado para inyectar VaultIamAuthService y obtener el token dinámicamente
+        // Constructor modificado para recibir la configuración de Vault y VaultIamAuthService
         public VaultKVService(IOptions<VaultConfig> vaultConfig, VaultIamAuthService vaultIamAuthService)
         {
             _vaultAddress = vaultConfig.Value.VaultAddress.TrimEnd('/');
@@ -21,7 +21,7 @@ namespace VaultAPI.Services
             _httpClient = new HttpClient();
         }
 
-        // Método para obtener el token dinámicamente a través de VaultIamAuthService
+        // Método para obtener el token de Vault dinámicamente
         private async Task<string> GetVaultTokenAsync()
         {
             var token = await _vaultIamAuthService.LoginAsync();
