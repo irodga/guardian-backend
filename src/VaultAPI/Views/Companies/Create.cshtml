@@ -67,7 +67,7 @@
                     <!-- Verificar que ViewBag.Groups no sea nulo y que sea un SelectList -->
     @if (ViewBag.Groups != null && ViewBag.Groups is SelectList groups)
     {
-        foreach (var group in groups)
+        foreach (var group in (SelectList)ViewBag.Groups)
         {
             <option value="@group.Value">@group.Text</option>
         }
