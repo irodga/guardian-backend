@@ -54,11 +54,19 @@ public async Task<IActionResult> Create([FromForm] CreateGroupDto dto)
         return Unauthorized("No tienes permisos para crear un grupo.");
     }
 
-    if (dto == null || string.IsNullOrEmpty(dto.Name))
+    // No es necesario verificar dto.Name, ya que el modelo ya tiene la validación [Required]
+    
+    var group = new Group
     {
-        return BadRequest("Nombre del grupo no válido.");
-    }
+        Name = dto.Name
+    };
 
+    _context.Groups.Add(group);
+    await _context.SaveChangesAsync();
+
+    // Redirige a la acción GetAll después de crear el grupo
+    return RedirectToAction(nameof(GetAll));  // Redirigir a la acción GetAll
+}
     var group = new Group
     {
         Name = dto.Name
