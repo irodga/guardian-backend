@@ -1,6 +1,7 @@
 // Ruta: src/VaultAPI/Controllers/GroupsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models.Dto;
+using VaultAPI.Models;
+using VaultAPI.Models.Dto;  // Asegúrate de que esta importación esté presente
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
