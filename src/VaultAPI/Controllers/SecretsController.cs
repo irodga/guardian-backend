@@ -67,6 +67,22 @@ namespace VaultAPI.Controllers
                 return View(dto);
             }
 
+            // Validación adicional para asegurarnos de que los campos requeridos no estén vacíos
+            if (dto.Companies == null || !dto.Companies.Any())
+            {
+                ModelState.AddModelError("Companies", "Debe seleccionar al menos una empresa.");
+            }
+
+            if (dto.Groups == null || !dto.Groups.Any())
+            {
+                ModelState.AddModelError("Groups", "Debe seleccionar al menos un grupo.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(dto);  // Regresamos la vista con los errores de validación
+            }
+
             // Generar VaultPath
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
