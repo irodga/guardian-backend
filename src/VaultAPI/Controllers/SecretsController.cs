@@ -73,7 +73,7 @@ namespace VaultAPI.Controllers
             _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, FilesCount: {FilesCount}, Expiration: {Expiration}",
                 dto.Name, dto.Type, dto.CompanyId, dto.Files?.Count ?? 0, dto.Expiration);
 
-            // Verificar si CompanyId existe en la base de datos
+            // Verificar si el CompanyId existe en la base de datos
             var companyExists = await _context.Companies
                 .AnyAsync(c => c.Id == dto.CompanyId);
 

@@ -21,6 +21,6 @@ namespace VaultAPI.Models.Dto
 
         public int CompanyId { get; set; }  // ID de la empresa asociada
 
-        public List<Company> Companies { get; set; }  // Lista de empresas asociadas
+        public List<Company>? Companies { get; set; }  // Lista de empresas asociadas
     }
 }
