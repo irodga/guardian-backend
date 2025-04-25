@@ -65,6 +65,19 @@ namespace VaultAPI.Controllers
             return View(model);  // Pasamos CreateSecretDto a la vista
         }
 
+        [HttpGet("view/{id}")]
+        public IActionResult ViewSecret(int id)
+            {
+                var secret = _context.Secrets.FirstOrDefault(s => s.Id == id);
+                
+                if (secret == null)
+                {
+                    return NotFound();  // Redirige o muestra 404 si no se encuentra el secreto
+                }
+
+                return View(secret);
+            }
+
         // POST: /Secrets/Create
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
