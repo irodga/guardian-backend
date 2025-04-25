@@ -1,6 +1,5 @@
 // Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
-using VaultAPI.Models.Dto;
 using VaultAPI.Models;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,13 +15,13 @@ namespace VaultAPI.Controllers
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
-        private readonly VaultKVService _vaultKvService;
+        private readonly VaultKVService _vaultKvService;  // Usamos el VaultKVService para interactuar con Vault
         private readonly ILogger<SecretsController> _logger;
 
         public SecretsController(GuardianDbContext context, VaultKVService vaultKvService, ILogger<SecretsController> logger)
         {
             _context = context;
-            _vaultKvService = vaultKvService;
+            _vaultKvService = vaultKvService;  // Inyección del servicio de Vault
             _logger = logger;
         }
 
@@ -51,7 +50,7 @@ namespace VaultAPI.Controllers
             return View();  // Simplemente muestra la vista sin ningún modelo adicional
         }
 
-        // Actualización de la ruta: GET: /Secrets/View/{id}
+        // GET: /Secrets/View/{id}
         [HttpGet("view/{id}")]
         public async Task<IActionResult> ViewSecret(int id)
         {
@@ -64,6 +63,9 @@ namespace VaultAPI.Controllers
                 return NotFound();  // Si no se encuentra el secreto, devolver 404
             }
 
+            // Log para verificar el vaultPath que estamos utilizando
+            _logger.LogInformation("VaultPath del secreto: {VaultPath}", secret.VaultPath);
+
             // Llamar al método ReadSecretAsync del servicio VaultKVService para obtener el valor del secreto desde Vault
             var secretValue = await _vaultKvService.ReadSecretAsync(secret.VaultPath);  // Usamos el método de VaultKVService
 
@@ -73,10 +75,9 @@ namespace VaultAPI.Controllers
                 return View(secret);  // Si no se obtiene el valor del secreto, devolver la vista sin él
             }
 
-            // Asignar el valor recuperado de Vault al modelo del secreto
-            secret.Value = secretValue;
+            // Pasar el valor recuperado de Vault directamente a la vista, sin necesidad de agregar la propiedad `Value`
+            ViewData["SecretValue"] = secretValue;  // Usamos `ViewData` para pasar el valor del secreto a la vista
 
-            // Pasar el secreto con el valor recuperado a la vista
             return View(secret);
         }
     }
