@@ -32,8 +32,9 @@ namespace VaultAPI.Controllers
             }
 
             var secretsCount = await _context.Secrets
-                .Where(s => _context.SecretAccesses.Any(sa => sa.UserId == userId && sa.SecretId == s.Id))
-                .CountAsync();
+            .Where(s => _context.SecretAccesses
+             .Any(sa => sa.UserId == userId && sa.SecretId == s.Id)) // Asegúrate de que solo accedemos a campos existentes
+             .CountAsync();
 
             var accessCount = await _context.SecretAccesses
                 .Where(sa => sa.UserId == userId)
