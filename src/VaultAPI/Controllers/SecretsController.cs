@@ -5,7 +5,6 @@ using VaultAPI.Models;
 using VaultAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using System.IO;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
@@ -17,13 +16,13 @@ namespace VaultAPI.Controllers
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
-        private readonly VaultKVService _vaultKvService;
+        private readonly VaultKVService _vaultKvService;  // Usamos el VaultKVService para interactuar con Vault
         private readonly ILogger<SecretsController> _logger;
 
         public SecretsController(GuardianDbContext context, VaultKVService vaultKvService, ILogger<SecretsController> logger)
         {
             _context = context;
-            _vaultKvService = vaultKvService;
+            _vaultKvService = vaultKvService;  // Inyección del servicio de Vault
             _logger = logger;
         }
 
@@ -49,128 +48,36 @@ namespace VaultAPI.Controllers
         [HttpGet("create")]
         public IActionResult Create()
         {
-            _logger.LogInformation("Cargando empresas desde la base de datos.");
-
-            // Cargar las empresas desde la base de datos
-            var companies = _context.Companies.ToList();
-            _logger.LogInformation("Empresas cargadas: {CompanyCount}", companies.Count);
-
-            // Crear el modelo para pasarlo a la vista
-            var model = new CreateSecretDto
-            {
-                Companies = companies  // Pasamos la lista de empresas al modelo
-            };
-
-            _logger.LogInformation("Modelo de creación de secreto preparado para la vista.");
-            return View(model);  // Pasamos CreateSecretDto a la vista
+            return View();  // Simplemente muestra la vista sin ningún modelo adicional
         }
 
+        // GET: /Secrets/View/{id}
         [HttpGet("view/{id}")]
-        public IActionResult ViewSecret(int id)
-            {
-                var secret = _context.Secrets.FirstOrDefault(s => s.Id == id);
-                
-                if (secret == null)
-                {
-                    return NotFound();  // Redirige o muestra 404 si no se encuentra el secreto
-                }
-
-                return View(secret);
-            }
-
-        // POST: /Secrets/Create
-        [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
+        public async Task<IActionResult> ViewSecret(int id)
         {
-            _logger.LogInformation("Formulario recibido para crear secreto. Datos recibidos:");
-            _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, FilesCount: {FilesCount}, Expiration: {Expiration}",
-                dto.Name, dto.Type, dto.CompanyId, dto.Files?.Count ?? 0, dto.Expiration);
+            // Buscar el secreto en la base de datos usando el ID
+            var secret = await _context.Secrets
+                .FirstOrDefaultAsync(s => s.Id == id);
 
-            // Verificar si el CompanyId existe en la base de datos
-            var companyExists = await _context.Companies
-                .AnyAsync(c => c.Id == dto.CompanyId);
-
-            if (!companyExists)
+            if (secret == null)
             {
-                _logger.LogError("El CompanyId no existe en la base de datos.");
-                ModelState.AddModelError("CompanyId", "La empresa seleccionada no existe.");
-                return View(dto);  // Si no existe, retornar a la vista con el error
+                return NotFound();  // Si no se encuentra el secreto, devolver 404
             }
 
-            // Si el modelo no es válido, registrar los errores
-            if (!ModelState.IsValid)
+            // Llamar al método ReadSecretAsync del servicio VaultKVService para obtener el valor del secreto desde Vault
+            var secretValue = await _vaultKvService.ReadSecretAsync(secret.VaultPath);  // Usamos el método de VaultKVService
+
+            if (secretValue == null)
             {
-                _logger.LogWarning("Modelo no válido. Errores en el modelo:");
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    _logger.LogWarning("Error: {ErrorMessage}", error.ErrorMessage);
-                }
-                return View(dto);  // Si el modelo no es válido, retornar a la vista
+                _logger.LogError("No se pudo recuperar el valor del secreto desde Vault.");
+                return View(secret);  // Si no se obtiene el valor del secreto, devolver la vista sin él
             }
 
-            // Generar VaultPath
-            _logger.LogInformation("Generando VaultPath...");
-            var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
-            bool vaultSuccess = false;
+            // Asignar el valor recuperado de Vault al modelo del secreto
+            secret.Value = secretValue;
 
-            // Log de la operación de tipo de secreto
-            if (dto.Type == "password")
-            {
-                _logger.LogInformation("Creando secreto de tipo 'password'.");
-                vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Value!);
-            }
-            else if (dto.Type == "fiel" && dto.Files != null)
-            {
-                _logger.LogInformation("Creando secreto de tipo 'fiel'.");
-                using var memoryStream = new MemoryStream();
-                await dto.Files[0].CopyToAsync(memoryStream);
-                var base64File = Convert.ToBase64String(memoryStream.ToArray());
-
-                var fileData = new Dictionary<string, object>
-                {
-                    { "filename", dto.Files[0].FileName },
-                    { "data", base64File }
-                };
-
-                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, fileData);
-            }
-
-            if (!vaultSuccess)
-            {
-                _logger.LogError("Error al guardar el secreto en Vault.");
-                ModelState.AddModelError("", "Hubo un error al guardar el secreto en Vault.");
-                return View(dto);
-            }
-
-            _logger.LogInformation("Guardando el secreto en la base de datos...");
-            var secret = new Secret
-            {
-                Name = dto.Name,
-                Type = dto.Type,
-                VaultPath = vaultPath,
-                Expiration = dto.Expiration,
-                RequiresApproval = dto.RequiresApproval,
-                CompanyId = dto.CompanyId
-            };
-
-            _context.Secrets.Add(secret);
-            await _context.SaveChangesAsync();
-
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var secretAccess = new SecretAccess
-            {
-                UserId = userId,
-                SecretId = secret.Id,
-                Permission = "read"
-            };
-
-            _context.SecretAccesses.Add(secretAccess);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Secreto creado correctamente.");
-
-            TempData["LoginMessage"] = "¡Secreto creado correctamente!";
-            return RedirectToAction("Index", "Secrets");
+            // Pasar el secreto con el valor recuperado a la vista
+            return View(secret);
         }
     }
 }
