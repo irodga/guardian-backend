@@ -1,4 +1,3 @@
-// Ruta: src/VaultAPI/Controllers/SecretsController.cs
 using Microsoft.AspNetCore.Mvc;
 using VaultAPI.Models.Dto;
 using VaultAPI.Models;
@@ -11,27 +10,29 @@ namespace VaultAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("Secrets")] // Cambié la ruta para asegurar que sea '/Secrets' y no '/secrets'
+    [Route("Secrets")]  // Asegúrate de que la ruta sea '/Secrets'
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
         private readonly VaultKVService _vaultKvService;
+        private readonly VaultIamAuthService _vaultIamAuthService; // Suponiendo que usas VaultIamAuthService para obtener el token
 
-        public SecretsController(GuardianDbContext context, VaultKVService vaultKvService)
+        public SecretsController(GuardianDbContext context, VaultKVService vaultKvService, VaultIamAuthService vaultIamAuthService)
         {
             _context = context;
             _vaultKvService = vaultKvService;
+            _vaultIamAuthService = vaultIamAuthService;  // Inyectamos el servicio para obtener el token
         }
 
         // GET: /Secrets/Create
-        [HttpGet("create")] // Accede a '/Secrets/create'
+        [HttpGet("create")]
         public IActionResult Create()
         {
             return View();  // Muestra la vista de creación del secreto
         }
 
         // POST: /Secrets/Create
-        [HttpPost("create")] // Accede a '/Secrets/create' con POST
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             // Validar que los datos no estén vacíos
@@ -86,8 +87,12 @@ namespace VaultAPI.Controllers
         }
 
         // GET: /Secrets/Index
-        [HttpGet("index")] // Accede a '/Secrets/index'
+        [HttpGet("index")]
         public IActionResult Index()
+        {
+            var secrets = _context.Secrets.ToList();
+            return View(secrets);  // Muestra los secretos en la vista
+        }
 
         // GET: /Secrets/View/{id}
         [HttpGet("view/{id}")]
@@ -109,11 +114,6 @@ namespace VaultAPI.Controllers
             ViewData["SecretValue"] = secretValue;
 
             return View(secret);  // Devuelve la vista con el secreto y el valor recuperado
-        }
-
-        {
-            var secrets = _context.Secrets.ToList();
-            return View(secrets); // Muestra los secretos en la vista
         }
     }
 }
