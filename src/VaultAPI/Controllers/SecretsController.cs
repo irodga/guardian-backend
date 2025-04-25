@@ -11,7 +11,7 @@ namespace VaultAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("secrets")]
+    [Route("Secrets")] // Cambié la ruta para asegurar que sea '/Secrets' y no '/secrets'
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
@@ -24,14 +24,14 @@ namespace VaultAPI.Controllers
         }
 
         // GET: /Secrets/Create
-        [HttpGet("create")]
+        [HttpGet("create")] // Accede a '/Secrets/create'
         public IActionResult Create()
         {
             return View();  // Muestra la vista de creación del secreto
         }
 
         // POST: /Secrets/Create
-        [HttpPost("create")]
+        [HttpPost("create")] // Accede a '/Secrets/create' con POST
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             // Validar que los datos no estén vacíos
@@ -42,7 +42,7 @@ namespace VaultAPI.Controllers
 
             // Crear el VaultPath dinámicamente basado en la información del formulario
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
-            
+
             bool vaultSuccess = false;
             if (dto.Type == "password")
             {
@@ -83,6 +83,14 @@ namespace VaultAPI.Controllers
 
             // Redirigir a la página de índice de secretos
             return RedirectToAction("Index", "Secrets");
+        }
+
+        // GET: /Secrets/Index
+        [HttpGet("index")] // Accede a '/Secrets/index'
+        public IActionResult Index()
+        {
+            var secrets = _context.Secrets.ToList();
+            return View(secrets); // Muestra los secretos en la vista
         }
     }
 }
