@@ -24,44 +24,61 @@ namespace VaultAPI.Controllers
             _vaultKvService = vaultKvService;
         }
 
+        // GET: /Secrets/Create
         [HttpGet("create")]
         public IActionResult Create()
         {
-            return View(); // Simplemente muestra la vista sin ningún modelo adicional
+            return View(); // Muestra la vista de creación del secreto
         }
 
+        // POST: /Secrets/Create
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
+            // Validar los datos del formulario
             if (dto.CompanyId == 0 || string.IsNullOrEmpty(dto.Name) || string.IsNullOrEmpty(dto.Type))
             {
                 return View();  // Si los datos son incorrectos, no haces nada, solo vuelves a la vista
             }
 
-            // Crear el VaultPath
+            // Crear el VaultPath dinámicamente basado en la información del formulario
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
-            bool vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Value);
+            
+            // Llamar a Vault para guardar el secreto
+            bool vaultSuccess = false;
+            if (dto.Type == "password")
+            {
+                // Guardar el secreto de tipo "password" en Vault
+                vaultSuccess = await _vaultKvService.WriteSecretAsync(vaultPath, dto.Name);  // Usamos solo `dto.Name` como valor
+            }
+            else if (dto.Type == "fiel")
+            {
+                // Manejar los secretos tipo "fiel"
+                vaultSuccess = await _vaultKvService.WriteSecretRawAsync(vaultPath, new { data = dto.Name });  // Solo ejemplo, ajusta según lo necesites
+            }
 
             if (!vaultSuccess)
             {
                 // Si la creación del secreto en Vault falla
-                return View(); 
+                return View();  // Redirigir o mostrar un mensaje de error
             }
 
-            // Guardar el secreto en la base de datos
+            // Guardar solo el VaultPath en la base de datos
             var secret = new Secret
             {
                 Name = dto.Name,
                 Type = dto.Type,
-                VaultPath = vaultPath,
+                VaultPath = vaultPath,  // Guardamos solo la ruta de Vault en la base de datos
                 Expiration = dto.Expiration,
+                RequiresApproval = dto.RequiresApproval,
                 CompanyId = dto.CompanyId
             };
 
+            // Añadir el secreto a la base de datos
             _context.Secrets.Add(secret);
             await _context.SaveChangesAsync();
 
-            // Redirigir a la página de índice (o alguna otra página después de éxito)
+            // Redirigir a la página de índice de secretos
             return RedirectToAction("Index", "Secrets");
         }
     }
