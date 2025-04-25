@@ -88,6 +88,29 @@ namespace VaultAPI.Controllers
         // GET: /Secrets/Index
         [HttpGet("index")] // Accede a '/Secrets/index'
         public IActionResult Index()
+
+        // GET: /Secrets/View/{id}
+        [HttpGet("view/{id}")]
+        public async Task<IActionResult> ViewSecret(int id)
+        {
+            // Recupera el secreto de la base de datos usando el ID
+            var secret = await _context.Secrets
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (secret == null)
+            {
+                return NotFound();  // Si el secreto no existe, retorna un error 404
+            }
+
+            // Recuperar el valor del secreto desde Vault usando VaultPath
+            var secretValue = await _vaultKvService.ReadSecretAsync(secret.VaultPath);
+
+            // Pasar el secreto y su valor a la vista
+            ViewData["SecretValue"] = secretValue;
+
+            return View(secret);  // Devuelve la vista con el secreto y el valor recuperado
+        }
+
         {
             var secrets = _context.Secrets.ToList();
             return View(secrets); // Muestra los secretos en la vista
