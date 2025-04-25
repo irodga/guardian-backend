@@ -16,13 +16,13 @@ namespace VaultAPI.Controllers
     public class SecretsController : Controller
     {
         private readonly GuardianDbContext _context;
-        private readonly VaultKVService _vaultKvService;  // Usamos el VaultKVService para interactuar con Vault
+        private readonly VaultKVService _vaultKvService;
         private readonly ILogger<SecretsController> _logger;
 
         public SecretsController(GuardianDbContext context, VaultKVService vaultKvService, ILogger<SecretsController> logger)
         {
             _context = context;
-            _vaultKvService = vaultKvService;  // Inyección del servicio de Vault
+            _vaultKvService = vaultKvService;
             _logger = logger;
         }
 
@@ -51,7 +51,7 @@ namespace VaultAPI.Controllers
             return View();  // Simplemente muestra la vista sin ningún modelo adicional
         }
 
-        // GET: /Secrets/View/{id}
+        // Actualización de la ruta: GET: /Secrets/View/{id}
         [HttpGet("view/{id}")]
         public async Task<IActionResult> ViewSecret(int id)
         {
