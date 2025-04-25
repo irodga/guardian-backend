@@ -58,11 +58,11 @@ namespace VaultAPI.Controllers
             // Crear el modelo para pasarlo a la vista
             var model = new CreateSecretDto
             {
-                Companies = companies
+                Companies = companies  // Pasamos la lista de empresas al modelo
             };
 
             _logger.LogInformation("Modelo de creación de secreto preparado para la vista.");
-            return View(model);
+            return View(model);  // Pasamos CreateSecretDto a la vista
         }
 
         // POST: /Secrets/Create
@@ -70,22 +70,21 @@ namespace VaultAPI.Controllers
         public async Task<IActionResult> Create([FromForm] CreateSecretDto dto)
         {
             _logger.LogInformation("Formulario recibido para crear secreto. Datos recibidos:");
-
-            // Log de los datos recibidos
             _logger.LogInformation("Name: {Name}, Type: {Type}, CompanyId: {CompanyId}, FilesCount: {FilesCount}, Expiration: {Expiration}",
                 dto.Name, dto.Type, dto.CompanyId, dto.Files?.Count ?? 0, dto.Expiration);
 
-            // Verificar si CompanyId es válido (no 0)
-            if (dto.CompanyId == 0)
+            // Verificar si CompanyId existe en la base de datos
+            var companyExists = await _context.Companies
+                .AnyAsync(c => c.Id == dto.CompanyId);
+
+            if (!companyExists)
             {
-                _logger.LogError("El CompanyId no ha sido seleccionado o es inválido.");
-                ModelState.AddModelError("CompanyId", "Debe seleccionar una empresa.");
+                _logger.LogError("El CompanyId no existe en la base de datos.");
+                ModelState.AddModelError("CompanyId", "La empresa seleccionada no existe.");
+                return View(dto);  // Si no existe, retornar a la vista con el error
             }
 
-            // Revisar el valor de Companies en el DTO recibido
-            _logger.LogInformation("Recibido Companies: {CompaniesCount}", dto.Companies?.Count ?? 0);
-
-            // Mostrar el contenido del ModelState para ver si hay algún error relacionado con "Companies"
+            // Si el modelo no es válido, registrar los errores
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Modelo no válido. Errores en el modelo:");
@@ -96,6 +95,7 @@ namespace VaultAPI.Controllers
                 return View(dto);  // Si el modelo no es válido, retornar a la vista
             }
 
+            // Generar VaultPath
             _logger.LogInformation("Generando VaultPath...");
             var vaultPath = $"grupo{dto.CompanyId}/empresa{dto.CompanyId}/{dto.Name.ToLower().Replace(" ", "-")}";
             bool vaultSuccess = false;
