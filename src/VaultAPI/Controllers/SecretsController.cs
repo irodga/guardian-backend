@@ -51,7 +51,7 @@ namespace VaultAPI.Controllers
         {
             _logger.LogInformation("Cargando empresas desde la base de datos.");
 
-            // Cargar las empresas desde la base de datos (sin los grupos)
+            // Cargar las empresas desde la base de datos
             var companies = _context.Companies.ToList();
             _logger.LogInformation("Empresas cargadas: {CompanyCount}", companies.Count);
 
